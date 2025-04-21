@@ -1,5 +1,5 @@
 """
-Task Ticker v4 - Filterable To-Do List with Metadata, Backup, and Resilience
+Task Ticker v5 - Core Refinement: UUIDs, Rendering, Logging, Resilience
 Author: Neils Haldane-Lutterodt
 """
 
@@ -7,11 +7,20 @@ import tkinter as tk
 from tkinter import messagebox
 import json
 import os
+from uuid import uuid4
 from datetime import datetime
 import shutil
+import logging
 
+# ---------------------------
+# FILE SETTINGS
+# ---------------------------
 TASKS_FILE = "tasks.json"
 BACKUP_FILE = "tasks_backup.json"
+LOG_FILE = "task_ticker.log"
+
+# Setup logging
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class TaskTickerApp:
     def __init__(self, root):
@@ -21,7 +30,8 @@ class TaskTickerApp:
         self.root.resizable(False, False)
 
         self.tasks = []
-        self.filter_mode = tk.StringVar(value="All")  # Filter dropdown state
+        self.visible_tasks = []  # Tasks currently rendered in the listbox
+        self.filter_mode = tk.StringVar(value="All")
 
         self.create_widgets()
         self.load_tasks_from_file()
@@ -30,14 +40,10 @@ class TaskTickerApp:
     # UI SETUP
     # ---------------------------
     def create_widgets(self):
-        """Create and layout all widgets"""
-
-        # Filter selector
         filter_frame = tk.Frame(self.root)
         filter_frame.pack(pady=(10, 0))
 
         tk.Label(filter_frame, text="Filter:", font=('Arial', 10)).pack(side=tk.LEFT, padx=(10, 5))
-
         filter_dropdown = tk.OptionMenu(
             filter_frame,
             self.filter_mode,
@@ -47,7 +53,6 @@ class TaskTickerApp:
         filter_dropdown.config(width=10)
         filter_dropdown.pack(side=tk.LEFT)
 
-        # Task input
         entry_frame = tk.Frame(self.root)
         entry_frame.pack(pady=10)
 
@@ -57,7 +62,6 @@ class TaskTickerApp:
         add_btn = tk.Button(entry_frame, text="Add Task", command=self.add_task, bg="#4CAF50", fg="white")
         add_btn.pack(side=tk.LEFT)
 
-        # Task list display
         list_frame = tk.Frame(self.root)
         list_frame.pack(pady=10)
 
@@ -70,7 +74,6 @@ class TaskTickerApp:
         self.task_listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.task_listbox.yview)
 
-        # Buttons
         btn_frame = tk.Frame(self.root)
         btn_frame.pack(pady=15)
 
@@ -81,20 +84,22 @@ class TaskTickerApp:
         done_btn.grid(row=0, column=1, padx=10)
 
     # ---------------------------
-    # TASK OPERATIONS
+    # TASK ACTIONS
     # ---------------------------
     def add_task(self):
-        """Add a task with metadata"""
         raw_text = self.task_input.get().strip()
 
         if not raw_text:
             messagebox.showwarning("Empty Input", "Please enter a task.")
             return
 
-        sanitized_text = raw_text.replace("<", "").replace(">", "").replace(";", "")
+        if len(raw_text) > 100:
+            messagebox.showwarning("Too Long", "Tasks should be under 100 characters.")
+            return
 
         task = {
-            "task": sanitized_text,
+            "id": str(uuid4()),
+            "task": raw_text,
             "status": "pending",
             "created_at": datetime.now().isoformat(timespec='seconds'),
             "priority": "normal"
@@ -104,71 +109,67 @@ class TaskTickerApp:
         self.task_input.delete(0, tk.END)
         self.save_tasks_to_file()
         self.render_task_list()
+        logging.info(f"Task added: {task}")
 
     def delete_task(self):
-        """Deletes selected task"""
         try:
-            selected_index = self.task_listbox.curselection()[0]
-            visible_tasks = self.get_filtered_tasks()
-
-            task_to_delete = visible_tasks[selected_index]
-            global_index = self.tasks.index(task_to_delete)
-
-            confirm = messagebox.askyesno("Confirm Delete", f"Delete task: '{task_to_delete['task']}'?")
+            index = self.task_listbox.curselection()[0]
+            task = self.visible_tasks[index]
+            confirm = messagebox.askyesno("Confirm Delete", f"Delete task: '{task['task']}'?")
             if confirm:
-                self.tasks.pop(global_index)
+                self.tasks = [t for t in self.tasks if t["id"] != task["id"]]
                 self.save_tasks_to_file()
                 self.render_task_list()
+                logging.info(f"Task deleted: {task}")
         except IndexError:
             messagebox.showerror("No Selection", "Please select a task to delete.")
 
     def mark_done(self):
-        """Marks a task as done"""
         try:
-            selected_index = self.task_listbox.curselection()[0]
-            visible_tasks = self.get_filtered_tasks()
+            index = self.task_listbox.curselection()[0]
+            task = self.visible_tasks[index]
 
-            task_to_mark = visible_tasks[selected_index]
-            global_index = self.tasks.index(task_to_mark)
+            for t in self.tasks:
+                if t["id"] == task["id"]:
+                    if t["status"] == "done":
+                        messagebox.showinfo("Already Done", "This task is already marked as done.")
+                        return
+                    t["status"] = "done"
+                    break
 
-            if self.tasks[global_index]["status"] == "done":
-                messagebox.showinfo("Already Done", "This task is already marked as done.")
-                return
-
-            self.tasks[global_index]["status"] = "done"
             self.save_tasks_to_file()
             self.render_task_list()
+            logging.info(f"Task marked done: {task}")
         except IndexError:
             messagebox.showerror("No Selection", "Please select a task to mark as done.")
 
     # ---------------------------
-    # RENDERING / FILTERING
+    # FILTERING / DISPLAY
     # ---------------------------
     def get_filtered_tasks(self):
-        """Returns tasks according to current filter setting"""
         mode = self.filter_mode.get()
-
         if mode == "Pending":
-            return [task for task in self.tasks if task["status"] == "pending"]
+            return [t for t in self.tasks if t["status"] == "pending"]
         elif mode == "Done":
-            return [task for task in self.tasks if task["status"] == "done"]
+            return [t for t in self.tasks if t["status"] == "done"]
         return self.tasks
 
-    def render_task_list(self):
-        """Displays the filtered tasks in the listbox"""
-        self.task_listbox.delete(0, tk.END)
+    def format_task_display(self, task):
+        if task["status"] == "done":
+            return f"✔ {task['task']}"
+        return task["task"]
 
-        for task in self.get_filtered_tasks():
-            display_text = task["task"]
-            if task["status"] == "done":
-                display_text = f"✔ {display_text}"
-            self.task_listbox.insert(tk.END, display_text)
+    def render_task_list(self):
+        self.task_listbox.delete(0, tk.END)
+        self.visible_tasks = self.get_filtered_tasks()
+
+        for task in self.visible_tasks:
+            self.task_listbox.insert(tk.END, self.format_task_display(task))
 
     # ---------------------------
     # FILE HANDLING
     # ---------------------------
     def save_tasks_to_file(self):
-        """Save tasks with backup"""
         try:
             if os.path.exists(TASKS_FILE):
                 shutil.copy(TASKS_FILE, BACKUP_FILE)
@@ -177,10 +178,10 @@ class TaskTickerApp:
                 json.dump(self.tasks, f, indent=4)
 
         except Exception as e:
+            logging.error(f"Save Error: {e}")
             messagebox.showerror("Save Error", f"Error saving tasks:\n{e}")
 
     def load_tasks_from_file(self):
-        """Loads tasks and populates UI"""
         if not os.path.exists(TASKS_FILE):
             return
 
@@ -192,23 +193,23 @@ class TaskTickerApp:
             self.tasks = data
             self.render_task_list()
         except Exception as e:
+            logging.error(f"Load Error: {e}")
             self.recover_tasks_file(error_msg=str(e))
 
     def validate_json_data(self, data):
-        """Validates JSON structure"""
         if not isinstance(data, list):
             raise ValueError("Task file is not a list.")
         for item in data:
-            if not isinstance(item, dict) or "task" not in item or "status" not in item:
+            if not all(k in item for k in ("id", "task", "status")):
                 raise ValueError("Malformed task entry in JSON.")
 
     def recover_tasks_file(self, error_msg="Unknown"):
-        """Restores from corrupted file state"""
         messagebox.showwarning("Task File Corrupted",
             f"The task file appears corrupted or invalid.\n\nError: {error_msg}\n\nStarting with a fresh list.")
         self.tasks = []
         self.save_tasks_to_file()
         self.task_listbox.delete(0, tk.END)
+        logging.warning("Recovered from corrupted task file.")
 
 # ---------------------------
 # APP ENTRY POINT
@@ -221,9 +222,5 @@ if __name__ == "__main__":
     if not os.path.exists(BACKUP_FILE):
         with open(BACKUP_FILE, 'w') as f:
             json.dump([], f)
-    else:
-        with open(BACKUP_FILE, 'r') as f:
-            backup_data = json.load(f)
-            if not isinstance(backup_data, list):
-                with open(BACKUP_FILE, 'w') as f:
-                    json.dump([], f)    
+    logging.info("Task Ticker closed.")
+    logging.shutdown()  # Ensure all logs are written before closing    
