@@ -1,5 +1,5 @@
 """
-Task Ticker v5 - Core Refinement: UUIDs, Rendering, Logging, Resilience
+Task Ticker v6 - Toggle Task Status: Pending ↔ Done
 Author: Neils Haldane-Lutterodt
 """
 
@@ -19,8 +19,8 @@ TASKS_FILE = "tasks.json"
 BACKUP_FILE = "tasks_backup.json"
 LOG_FILE = "task_ticker.log"
 
-# Setup logging
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 class TaskTickerApp:
     def __init__(self, root):
@@ -30,7 +30,7 @@ class TaskTickerApp:
         self.root.resizable(False, False)
 
         self.tasks = []
-        self.visible_tasks = []  # Tasks currently rendered in the listbox
+        self.visible_tasks = []
         self.filter_mode = tk.StringVar(value="All")
 
         self.create_widgets()
@@ -80,8 +80,8 @@ class TaskTickerApp:
         delete_btn = tk.Button(btn_frame, text="Delete Task", command=self.delete_task, bg="#f44336", fg="white")
         delete_btn.grid(row=0, column=0, padx=10)
 
-        done_btn = tk.Button(btn_frame, text="Mark Done", command=self.mark_done, bg="#2196F3", fg="white")
-        done_btn.grid(row=0, column=1, padx=10)
+        toggle_btn = tk.Button(btn_frame, text="Toggle Done", command=self.toggle_task_status, bg="#2196F3", fg="white")
+        toggle_btn.grid(row=0, column=1, padx=10)
 
     # ---------------------------
     # TASK ACTIONS
@@ -124,24 +124,27 @@ class TaskTickerApp:
         except IndexError:
             messagebox.showerror("No Selection", "Please select a task to delete.")
 
-    def mark_done(self):
+    def toggle_task_status(self):
+        """Toggle between done and pending states"""
         try:
             index = self.task_listbox.curselection()[0]
             task = self.visible_tasks[index]
+            task_to_update = self.find_task_by_id(task["id"])
 
-            for t in self.tasks:
-                if t["id"] == task["id"]:
-                    if t["status"] == "done":
-                        messagebox.showinfo("Already Done", "This task is already marked as done.")
-                        return
-                    t["status"] = "done"
-                    break
-
-            self.save_tasks_to_file()
-            self.render_task_list()
-            logging.info(f"Task marked done: {task}")
+            if task_to_update:
+                new_status = "pending" if task_to_update["status"] == "done" else "done"
+                task_to_update["status"] = new_status
+                logging.info(f"Task status updated: {task_to_update}")
+                self.save_tasks_to_file()
+                self.render_task_list()
         except IndexError:
-            messagebox.showerror("No Selection", "Please select a task to mark as done.")
+            messagebox.showerror("No Selection", "Please select a task to toggle status.")
+
+    def find_task_by_id(self, task_id):
+        for task in self.tasks:
+            if task["id"] == task_id:
+                return task
+        return None
 
     # ---------------------------
     # FILTERING / DISPLAY
@@ -155,14 +158,11 @@ class TaskTickerApp:
         return self.tasks
 
     def format_task_display(self, task):
-        if task["status"] == "done":
-            return f"✔ {task['task']}"
-        return task["task"]
+        return f"✔ {task['task']}" if task["status"] == "done" else task["task"]
 
     def render_task_list(self):
         self.task_listbox.delete(0, tk.END)
         self.visible_tasks = self.get_filtered_tasks()
-
         for task in self.visible_tasks:
             self.task_listbox.insert(tk.END, self.format_task_display(task))
 
@@ -176,7 +176,6 @@ class TaskTickerApp:
 
             with open(TASKS_FILE, 'w', encoding='utf-8') as f:
                 json.dump(self.tasks, f, indent=4)
-
         except Exception as e:
             logging.error(f"Save Error: {e}")
             messagebox.showerror("Save Error", f"Error saving tasks:\n{e}")
@@ -211,6 +210,7 @@ class TaskTickerApp:
         self.task_listbox.delete(0, tk.END)
         logging.warning("Recovered from corrupted task file.")
 
+
 # ---------------------------
 # APP ENTRY POINT
 # ---------------------------
@@ -223,4 +223,4 @@ if __name__ == "__main__":
         with open(BACKUP_FILE, 'w') as f:
             json.dump([], f)
     logging.info("Task Ticker closed.")
-    logging.shutdown()  # Ensure all logs are written before closing    
+    logging.shutdown()

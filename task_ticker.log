@@ -1,0 +1,12 @@
+2025-04-21 10:52:14,232 - ERROR - Load Error: Malformed task entry in JSON.
+2025-04-21 10:52:19,355 - WARNING - Recovered from corrupted task file.
+2025-04-21 10:52:28,495 - INFO - Task added: {'id': 'bcdae36e-adb3-48c9-b58d-3257b080bfc7', 'task': 'test 12', 'status': 'pending', 'created_at': '2025-04-21T10:52:28', 'priority': 'normal'}
+2025-04-21 10:52:30,976 - INFO - Task added: {'id': '199714a4-9bd5-431e-b43b-e435359d4fbf', 'task': '2te', 'status': 'pending', 'created_at': '2025-04-21T10:52:30', 'priority': 'normal'}
+2025-04-21 10:52:32,666 - INFO - Task added: {'id': '130bc0ec-9349-4826-9348-84956162a306', 'task': 'asdfa', 'status': 'pending', 'created_at': '2025-04-21T10:52:32', 'priority': 'normal'}
+2025-04-21 10:52:34,621 - INFO - Task marked done: {'id': '130bc0ec-9349-4826-9348-84956162a306', 'task': 'asdfa', 'status': 'done', 'created_at': '2025-04-21T10:52:32', 'priority': 'normal'}
+2025-04-21 10:52:36,400 - INFO - Task marked done: {'id': 'bcdae36e-adb3-48c9-b58d-3257b080bfc7', 'task': 'test 12', 'status': 'done', 'created_at': '2025-04-21T10:52:28', 'priority': 'normal'}
+2025-04-21 10:52:38,090 - INFO - Task marked done: {'id': '199714a4-9bd5-431e-b43b-e435359d4fbf', 'task': '2te', 'status': 'done', 'created_at': '2025-04-21T10:52:30', 'priority': 'normal'}
+2025-04-21 10:52:45,310 - INFO - Task Ticker closed.
+2025-04-21 10:56:38,629 - INFO - Task status updated: {'id': 'bcdae36e-adb3-48c9-b58d-3257b080bfc7', 'task': 'test 12', 'status': 'pending', 'created_at': '2025-04-21T10:52:28', 'priority': 'normal'}
+2025-04-21 10:56:40,802 - INFO - Task status updated: {'id': 'bcdae36e-adb3-48c9-b58d-3257b080bfc7', 'task': 'test 12', 'status': 'done', 'created_at': '2025-04-21T10:52:28', 'priority': 'normal'}
+2025-04-21 10:56:44,182 - INFO - Task Ticker closed.
