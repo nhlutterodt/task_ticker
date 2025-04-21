@@ -1,5 +1,5 @@
 """
-Task Ticker v6 - Toggle Task Status: Pending ↔ Done
+Task Ticker v6.5 - Robust Toggle, Visual Consistency, Session Undo Tracking
 Author: Neils Haldane-Lutterodt
 """
 
@@ -32,6 +32,9 @@ class TaskTickerApp:
         self.tasks = []
         self.visible_tasks = []
         self.filter_mode = tk.StringVar(value="All")
+
+        # Simple session-based undo stack
+        self.status_undo_stack = {}
 
         self.create_widgets()
         self.load_tasks_from_file()
@@ -118,6 +121,7 @@ class TaskTickerApp:
             confirm = messagebox.askyesno("Confirm Delete", f"Delete task: '{task['task']}'?")
             if confirm:
                 self.tasks = [t for t in self.tasks if t["id"] != task["id"]]
+                self.status_undo_stack.pop(task["id"], None)
                 self.save_tasks_to_file()
                 self.render_task_list()
                 logging.info(f"Task deleted: {task}")
@@ -125,18 +129,21 @@ class TaskTickerApp:
             messagebox.showerror("No Selection", "Please select a task to delete.")
 
     def toggle_task_status(self):
-        """Toggle between done and pending states"""
+        """Toggle between done and pending states with undo tracking"""
         try:
             index = self.task_listbox.curselection()[0]
             task = self.visible_tasks[index]
             task_to_update = self.find_task_by_id(task["id"])
 
-            if task_to_update:
-                new_status = "pending" if task_to_update["status"] == "done" else "done"
-                task_to_update["status"] = new_status
-                logging.info(f"Task status updated: {task_to_update}")
+            if task_to_update and task_to_update["status"] in {"pending", "done"}:
+                prev_status = task_to_update["status"]
+                task_to_update["status"] = "pending" if prev_status == "done" else "done"
+                self.status_undo_stack[task_to_update["id"]] = prev_status  # Track last status
+                logging.info(f"Task status toggled: {task_to_update}")
                 self.save_tasks_to_file()
                 self.render_task_list()
+            else:
+                messagebox.showwarning("Unsupported Status", f"Task status '{task_to_update.get('status')}' is not toggleable.")
         except IndexError:
             messagebox.showerror("No Selection", "Please select a task to toggle status.")
 
@@ -158,13 +165,20 @@ class TaskTickerApp:
         return self.tasks
 
     def format_task_display(self, task):
-        return f"✔ {task['task']}" if task["status"] == "done" else task["task"]
+        """Ensures visual consistency for task rendering"""
+        text = task["task"]
+        if task["status"] == "done":
+            return f"✔ {text}"
+        return text
 
     def render_task_list(self):
+        """Updates the Listbox UI with filtered tasks"""
         self.task_listbox.delete(0, tk.END)
         self.visible_tasks = self.get_filtered_tasks()
+
         for task in self.visible_tasks:
-            self.task_listbox.insert(tk.END, self.format_task_display(task))
+            display = self.format_task_display(task)
+            self.task_listbox.insert(tk.END, display)
 
     # ---------------------------
     # FILE HANDLING
@@ -224,3 +238,7 @@ if __name__ == "__main__":
             json.dump([], f)
     logging.info("Task Ticker closed.")
     logging.shutdown()
+    # Ensure backup file is created if it doesn't exist
+    if not os.path.exists(BACKUP_FILE):
+        with open(BACKUP_FILE, 'w') as f:
+            json.dump([], f)
