@@ -1,23 +1,35 @@
 [
     {
-        "id": "bcdae36e-adb3-48c9-b58d-3257b080bfc7",
-        "task": "test 12",
-        "status": "done",
-        "created_at": "2025-04-21T10:52:28",
-        "priority": "normal"
+        "id": "dff2baa7-f1cd-4393-8403-a66398c719ea",
+        "task": "1",
+        "status": "pending",
+        "group": "Personal",
+        "due_date": "2025-04-22",
+        "created_at": "2025-04-22T09:04:49.036301",
+        "priority": "normal",
+        "sequence": 1,
+        "depends_on": null
     },
     {
-        "id": "199714a4-9bd5-431e-b43b-e435359d4fbf",
-        "task": "2te",
-        "status": "done",
-        "created_at": "2025-04-21T10:52:30",
-        "priority": "normal"
+        "id": "1f38b1a4-994c-4067-896b-d55e93bca389",
+        "task": "2",
+        "status": "pending",
+        "group": "Personal",
+        "due_date": "2025-04-22",
+        "created_at": "2025-04-22T09:04:51.128868",
+        "priority": "normal",
+        "sequence": 2,
+        "depends_on": null
     },
     {
-        "id": "130bc0ec-9349-4826-9348-84956162a306",
-        "task": "asdfa",
-        "status": "done",
-        "created_at": "2025-04-21T10:52:32",
-        "priority": "normal"
+        "id": "d22e1567-86a8-4f07-8fbb-7af6e3976443",
+        "task": "3",
+        "status": "pending",
+        "group": "Personal",
+        "due_date": "2025-04-22",
+        "created_at": "2025-04-22T09:04:52.734898",
+        "priority": "normal",
+        "sequence": 3,
+        "depends_on": null
     }
 ]
