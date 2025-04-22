@@ -2,7 +2,7 @@
     {
         "id": "bcdae36e-adb3-48c9-b58d-3257b080bfc7",
         "task": "test 12",
-        "status": "pending",
+        "status": "done",
         "created_at": "2025-04-21T10:52:28",
         "priority": "normal"
     },
