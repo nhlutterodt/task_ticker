@@ -58,8 +58,8 @@ class TaskTickerApp:
             try:
                 with open(SETTINGS_FILE, 'r') as f:
                     return json.load(f)
-            except:
-                pass
+            except Exception as e:
+                logging.error(f"Error loading settings: {e}")
         return DEFAULT_SETTINGS.copy()
 
     def save_settings(self):
