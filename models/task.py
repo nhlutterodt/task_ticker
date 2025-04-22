@@ -6,34 +6,43 @@ Author: Neils Haldane-Lutterodt
 import uuid
 from datetime import datetime
 
+
 class Task:
     def __init__(
         self,
-        task,
-        group="General",
-        due_date=None,
-        priority="normal",
-        status="pending",
-        sequence=1,
-        depends_on=None,
-        notes="",
-        tags=None,
-        task_id=None,
-        created_at=None
+        task: str,
+        group: str = "General",
+        due_date: str = None,
+        priority: str = "normal",
+        status: str = "pending",
+        sequence: int = 1,
+        depends_on: str = None,
+        notes: str = "",
+        tags: list = None,
+        recurrence: dict = None,
+        task_id: str = None,
+        created_at: str = None
     ):
         self.id = task_id or str(uuid.uuid4())
-        self.task = task
-        self.group = group.title()
+        self.task = task.strip()
+        self.group = group.title().strip() or "General"
         self.due_date = due_date or datetime.now().date().isoformat()
         self.created_at = created_at or datetime.now().isoformat()
-        self.priority = priority
-        self.status = status
+        self.priority = priority.lower()
+        self.status = status.lower()
         self.sequence = sequence
         self.depends_on = depends_on
-        self.notes = notes or ""
+        self.notes = notes.strip()
         self.tags = tags if tags is not None else []
+        self.recurrence = recurrence or {
+            "frequency": "none",
+            "interval": 1,
+            "count": None,
+            "end_date": None,
+            "clone_type": "shallow"
+        }
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "task": self.task,
@@ -45,13 +54,14 @@ class Task:
             "sequence": self.sequence,
             "depends_on": self.depends_on,
             "notes": self.notes,
-            "tags": self.tags
+            "tags": self.tags,
+            "recurrence": self.recurrence
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict):
         return cls(
-            task=data.get("task"),
+            task=data.get("task", ""),
             group=data.get("group", "General"),
             due_date=data.get("due_date"),
             priority=data.get("priority", "normal"),
@@ -60,14 +70,15 @@ class Task:
             depends_on=data.get("depends_on"),
             notes=data.get("notes", ""),
             tags=data.get("tags", []),
+            recurrence=data.get("recurrence"),
             task_id=data.get("id"),
             created_at=data.get("created_at")
         )
 
-    def is_done(self):
+    def is_done(self) -> bool:
         return self.status == "done"
 
-    def is_blocked(self, task_lookup):
+    def is_blocked(self, task_lookup: dict) -> bool:
         if not self.depends_on:
             return False
         dep = task_lookup.get(self.depends_on)

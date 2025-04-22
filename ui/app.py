@@ -1,24 +1,41 @@
 '''
-ui/app.py - Task Ticker GUI
+ui/app.py - Task Ticker GUI with Recurring Task Support
 Author: Neils Haldane-Lutterodt
 '''
+
+from logic.operations import (
+    toggle_status,
+    filter_tasks,
+    sort_tasks,
+    validate_dependency,
+    create_task_lookup,
+    recurrence_structure  # <-- now valid!
+)
+from storage.file_io import load_tasks, save_tasks
+from storage.settings import load_settings, save_settings
 
 import tkinter as tk
 from tkinter import messagebox
 from tkcalendar import DateEntry
+from uuid import uuid4
+from datetime import datetime
 from models.task import Task
 from storage.file_io import load_tasks, save_tasks
 from storage.settings import load_settings, save_settings
-from logic.operations import toggle_status, filter_tasks, sort_tasks, validate_dependency, create_task_lookup
-from uuid import uuid4
-from datetime import datetime
-
+from logic.operations import (
+    toggle_status,
+    filter_tasks,
+    sort_tasks,
+    validate_dependency,
+    create_task_lookup,
+    recurrence_structure
+)
 
 class TaskTickerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Task Ticker 📝")
-        self.root.geometry("640x720")
+        self.root.geometry("680x760")
         self.root.resizable(False, False)
 
         self.tasks = load_tasks()
@@ -28,13 +45,17 @@ class TaskTickerApp:
 
         self.filter_mode = tk.StringVar(value="All")
         self.group_filter = tk.StringVar(value="All Groups")
+        self.tag_filter = tk.StringVar(value="All Tags")
         self.group_entry_var = tk.StringVar(value="Personal")
         self.sort_key = tk.StringVar(value=self.settings.get("default_sort", "due_date"))
         self.sequence_input = tk.StringVar(value="1")
         self.selected_dependency = tk.StringVar(value="None")
+        self.recur_option = tk.StringVar(value="None")
         self.dependency_map = {}
 
         self.build_ui()
+        self.update_group_filter()
+        self.update_tag_filter()
         self.update_dependency_dropdown()
         self.render_task_list()
 
@@ -49,8 +70,12 @@ class TaskTickerApp:
         self.group_dropdown = tk.OptionMenu(control, self.group_filter, "All Groups", command=lambda _: self.render_task_list())
         self.group_dropdown.grid(row=0, column=3)
 
+        tk.Label(control, text="Tag:").grid(row=0, column=4)
+        self.tag_dropdown = tk.OptionMenu(control, self.tag_filter, "All Tags", command=lambda _: self.render_task_list())
+        self.tag_dropdown.grid(row=0, column=5)
+
         tk.Label(control, text="Sort:").grid(row=1, column=0)
-        tk.OptionMenu(control, self.sort_key, "due_date", "created_at", "priority", "sequence", command=lambda: self.render_task_list()).grid(row=1, column=1)
+        tk.OptionMenu(control, self.sort_key, "due_date", "created_at", "priority", "sequence", command=self.render_task_list).grid(row=1, column=1)
         tk.Button(control, text="Sort Now", command=self.render_task_list).grid(row=1, column=2, columnspan=2)
 
         entry = tk.Frame(self.root)
@@ -72,6 +97,10 @@ class TaskTickerApp:
         self.tag_input = tk.Entry(entry, width=14)
         self.tag_input.pack(side=tk.LEFT)
 
+        tk.Label(entry, text="Recurrence:").pack(side=tk.LEFT)
+        self.recur_menu = tk.OptionMenu(entry, self.recur_option, *recurrence_structure.keys())
+        self.recur_menu.pack(side=tk.LEFT)
+
         tk.Button(entry, text="Add", bg="#4CAF50", fg="white", command=self.add_task).pack(side=tk.LEFT, padx=5)
 
         dep_frame = tk.Frame(self.root)
@@ -82,7 +111,7 @@ class TaskTickerApp:
 
         list_frame = tk.Frame(self.root)
         list_frame.pack(pady=10)
-        self.task_listbox = tk.Listbox(list_frame, width=90, height=18)
+        self.task_listbox = tk.Listbox(list_frame, width=94, height=18)
         self.task_listbox.pack(side=tk.LEFT)
         self.task_listbox.bind("<Double-Button-1>", self.edit_notes_for_selected)
 
@@ -106,9 +135,9 @@ class TaskTickerApp:
         seq = int(self.sequence_input.get() or 1)
         dep_label = self.selected_dependency.get()
         depends_on = self.dependency_map.get(dep_label) if dep_label != "None" else None
-
-        tags_raw = self.tag_input.get().strip()
-        tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
+        tags = [t.strip() for t in self.tag_input.get().strip().split(",") if t.strip()]
+        recur_val = self.recur_option.get()
+        recur_dict = recurrence_structure[recur_val]
 
         if depends_on:
             parent = self.task_lookup.get(depends_on)
@@ -122,7 +151,8 @@ class TaskTickerApp:
             sequence=seq,
             depends_on=depends_on,
             tags=tags,
-            notes=""
+            notes="",
+            recurrence=recur_dict
         )
 
         self.tasks.append(new_task)
@@ -131,35 +161,30 @@ class TaskTickerApp:
         self.tag_input.delete(0, tk.END)
         self.sequence_input.set(str(seq + 1))
         self.selected_dependency.set("None")
+
         self.update_group_filter()
+        self.update_tag_filter()
         self.update_dependency_dropdown()
         self.save_all()
         self.render_task_list()
 
-    def delete_task(self):
-        try:
-            idx = self.task_listbox.curselection()[0]
-            task = self.visible_tasks[idx]
-            self.tasks.remove(task)
-            self.task_lookup.pop(task.id, None)
-            self.update_group_filter()
-            self.update_dependency_dropdown()
-            self.save_all()
-            self.render_task_list()
-        except IndexError:
-            messagebox.showerror("Error", "No task selected.")
+    def render_task_list(self):
+        self.visible_tasks = filter_tasks(self.tasks, self.filter_mode.get(), self.group_filter.get())
 
-    def toggle_selected_task(self):
-        try:
-            idx = self.task_listbox.curselection()[0]
-            task = self.visible_tasks[idx]
-            toggle_status(task, self.task_lookup)
-            self.save_all()
-            self.render_task_list()
-        except ValueError as ve:
-            messagebox.showwarning("Blocked", str(ve))
-        except IndexError:
-            messagebox.showerror("No Selection", "Please select a task.")
+        tag = self.tag_filter.get()
+        if tag != "All Tags":
+            self.visible_tasks = [t for t in self.visible_tasks if tag in t.tags]
+
+        self.visible_tasks = sort_tasks(self.visible_tasks, self.sort_key.get())
+        self.task_listbox.delete(0, tk.END)
+        for t in self.visible_tasks:
+            blocked = "⛔" if t.is_blocked(self.task_lookup) else ""
+            tags = f" 🏷️ {', '.join(t.tags)}" if t.tags else ""
+            recur = f" 🔁 {t.recurrence['frequency'].capitalize()}" if t.recurrence and t.recurrence.get("frequency") != "none" else ""
+            self.task_listbox.insert(
+                tk.END,
+                f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}){tags}{recur} {blocked}"
+            )
 
     def edit_notes_for_selected(self, event):
         try:
@@ -186,17 +211,34 @@ class TaskTickerApp:
 
         tk.Button(notes_window, text="Save Notes", command=save_notes_and_close).pack(pady=5)
 
-    def render_task_list(self):
-        self.visible_tasks = filter_tasks(self.tasks, self.filter_mode.get(), self.group_filter.get())
-        self.visible_tasks = sort_tasks(self.visible_tasks, self.sort_key.get())
-        self.task_listbox.delete(0, tk.END)
-        for t in self.visible_tasks:
-            blocked = "⛔" if t.is_blocked(self.task_lookup) else ""
-            tags = f" 🏷️ {', '.join(t.tags)}" if t.tags else ""
-            self.task_listbox.insert(
-                tk.END,
-                f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}){tags} {blocked}"
-            )
+    def toggle_selected_task(self):
+        try:
+            idx = self.task_listbox.curselection()[0]
+            task = self.visible_tasks[idx]
+            new_clone = toggle_status(task, self.task_lookup)
+            if new_clone:
+                self.tasks.append(new_clone)
+                self.task_lookup[new_clone.id] = new_clone
+            self.save_all()
+            self.render_task_list()
+        except ValueError as ve:
+            messagebox.showwarning("Blocked", str(ve))
+        except IndexError:
+            messagebox.showerror("No Selection", "Please select a task.")
+
+    def delete_task(self):
+        try:
+            idx = self.task_listbox.curselection()[0]
+            task = self.visible_tasks[idx]
+            self.tasks.remove(task)
+            self.task_lookup.pop(task.id, None)
+            self.update_group_filter()
+            self.update_tag_filter()
+            self.update_dependency_dropdown()
+            self.save_all()
+            self.render_task_list()
+        except IndexError:
+            messagebox.showerror("Error", "No task selected.")
 
     def update_group_filter(self):
         menu = self.group_dropdown["menu"]
@@ -205,6 +247,14 @@ class TaskTickerApp:
         menu.add_command(label="All Groups", command=lambda: self.group_filter.set("All Groups"))
         for g in groups:
             menu.add_command(label=g, command=lambda val=g: self.group_filter.set(val))
+
+    def update_tag_filter(self):
+        all_tags = sorted({tag for task in self.tasks for tag in task.tags})
+        menu = self.tag_dropdown["menu"]
+        menu.delete(0, "end")
+        menu.add_command(label="All Tags", command=lambda: self.tag_filter.set("All Tags"))
+        for tag in all_tags:
+            menu.add_command(label=tag, command=lambda val=tag: self.tag_filter.set(val))
 
     def update_dependency_dropdown(self):
         self.dependency_map.clear()
