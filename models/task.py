@@ -7,7 +7,20 @@ import uuid
 from datetime import datetime
 
 class Task:
-    def __init__(self, task, group="General", due_date=None, priority="normal", status="pending", sequence=1, depends_on=None, task_id=None, created_at=None):
+    def __init__(
+        self,
+        task,
+        group="General",
+        due_date=None,
+        priority="normal",
+        status="pending",
+        sequence=1,
+        depends_on=None,
+        notes="",
+        tags=None,
+        task_id=None,
+        created_at=None
+    ):
         self.id = task_id or str(uuid.uuid4())
         self.task = task
         self.group = group.title()
@@ -17,6 +30,8 @@ class Task:
         self.status = status
         self.sequence = sequence
         self.depends_on = depends_on
+        self.notes = notes or ""
+        self.tags = tags if tags is not None else []
 
     def to_dict(self):
         return {
@@ -28,7 +43,9 @@ class Task:
             "priority": self.priority,
             "status": self.status,
             "sequence": self.sequence,
-            "depends_on": self.depends_on
+            "depends_on": self.depends_on,
+            "notes": self.notes,
+            "tags": self.tags
         }
 
     @classmethod
@@ -41,6 +58,8 @@ class Task:
             status=data.get("status", "pending"),
             sequence=data.get("sequence", 1),
             depends_on=data.get("depends_on"),
+            notes=data.get("notes", ""),
+            tags=data.get("tags", []),
             task_id=data.get("id"),
             created_at=data.get("created_at")
         )

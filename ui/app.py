@@ -13,16 +13,16 @@ from logic.operations import toggle_status, filter_tasks, sort_tasks, validate_d
 from uuid import uuid4
 from datetime import datetime
 
+
 class TaskTickerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Task Ticker 📝")
-        self.root.geometry("600x680")
+        self.root.geometry("640x720")
         self.root.resizable(False, False)
 
         self.tasks = load_tasks()
         self.settings = load_settings()
-
         self.visible_tasks = []
         self.task_lookup = create_task_lookup(self.tasks)
 
@@ -30,7 +30,6 @@ class TaskTickerApp:
         self.group_filter = tk.StringVar(value="All Groups")
         self.group_entry_var = tk.StringVar(value="Personal")
         self.sort_key = tk.StringVar(value=self.settings.get("default_sort", "due_date"))
-
         self.sequence_input = tk.StringVar(value="1")
         self.selected_dependency = tk.StringVar(value="None")
         self.dependency_map = {}
@@ -56,14 +55,23 @@ class TaskTickerApp:
 
         entry = tk.Frame(self.root)
         entry.pack(pady=10)
+
         self.task_input = tk.Entry(entry, width=30)
         self.task_input.pack(side=tk.LEFT, padx=(10, 5))
+
         self.due_input = DateEntry(entry, width=12, date_pattern='yyyy-mm-dd')
         self.due_input.pack(side=tk.LEFT, padx=5)
+
         self.sequence_entry = tk.Entry(entry, width=5, textvariable=self.sequence_input)
         self.sequence_entry.pack(side=tk.LEFT)
+
         self.group_input = tk.Entry(entry, width=10, textvariable=self.group_entry_var)
         self.group_input.pack(side=tk.LEFT)
+
+        tk.Label(entry, text="Tags:").pack(side=tk.LEFT)
+        self.tag_input = tk.Entry(entry, width=14)
+        self.tag_input.pack(side=tk.LEFT)
+
         tk.Button(entry, text="Add", bg="#4CAF50", fg="white", command=self.add_task).pack(side=tk.LEFT, padx=5)
 
         dep_frame = tk.Frame(self.root)
@@ -74,8 +82,10 @@ class TaskTickerApp:
 
         list_frame = tk.Frame(self.root)
         list_frame.pack(pady=10)
-        self.task_listbox = tk.Listbox(list_frame, width=80, height=18)
+        self.task_listbox = tk.Listbox(list_frame, width=90, height=18)
         self.task_listbox.pack(side=tk.LEFT)
+        self.task_listbox.bind("<Double-Button-1>", self.edit_notes_for_selected)
+
         scrollbar = tk.Scrollbar(list_frame, command=self.task_listbox.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.task_listbox.config(yscrollcommand=scrollbar.set)
@@ -97,6 +107,9 @@ class TaskTickerApp:
         dep_label = self.selected_dependency.get()
         depends_on = self.dependency_map.get(dep_label) if dep_label != "None" else None
 
+        tags_raw = self.tag_input.get().strip()
+        tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
+
         if depends_on:
             parent = self.task_lookup.get(depends_on)
             if parent and not validate_dependency(Task(name, group, due), parent):
@@ -107,12 +120,15 @@ class TaskTickerApp:
             group=group,
             due_date=due,
             sequence=seq,
-            depends_on=depends_on
+            depends_on=depends_on,
+            tags=tags,
+            notes=""
         )
 
         self.tasks.append(new_task)
         self.task_lookup[new_task.id] = new_task
         self.task_input.delete(0, tk.END)
+        self.tag_input.delete(0, tk.END)
         self.sequence_input.set(str(seq + 1))
         self.selected_dependency.set("None")
         self.update_group_filter()
@@ -145,13 +161,42 @@ class TaskTickerApp:
         except IndexError:
             messagebox.showerror("No Selection", "Please select a task.")
 
+    def edit_notes_for_selected(self, event):
+        try:
+            idx = self.task_listbox.nearest(event.y)
+            task = self.visible_tasks[idx]
+            self.open_notes_editor(task)
+        except IndexError:
+            return
+
+    def open_notes_editor(self, task):
+        notes_window = tk.Toplevel(self.root)
+        notes_window.title(f"Notes for Task [{task.task}]")
+        notes_window.geometry("500x300")
+        notes_window.resizable(False, False)
+
+        text_area = tk.Text(notes_window, wrap=tk.WORD)
+        text_area.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        text_area.insert(tk.END, task.notes)
+
+        def save_notes_and_close():
+            task.notes = text_area.get("1.0", tk.END).strip()
+            self.save_all()
+            notes_window.destroy()
+
+        tk.Button(notes_window, text="Save Notes", command=save_notes_and_close).pack(pady=5)
+
     def render_task_list(self):
         self.visible_tasks = filter_tasks(self.tasks, self.filter_mode.get(), self.group_filter.get())
         self.visible_tasks = sort_tasks(self.visible_tasks, self.sort_key.get())
         self.task_listbox.delete(0, tk.END)
         for t in self.visible_tasks:
             blocked = "⛔" if t.is_blocked(self.task_lookup) else ""
-            self.task_listbox.insert(tk.END, f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}) {blocked}")
+            tags = f" 🏷️ {', '.join(t.tags)}" if t.tags else ""
+            self.task_listbox.insert(
+                tk.END,
+                f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}){tags} {blocked}"
+            )
 
     def update_group_filter(self):
         menu = self.group_dropdown["menu"]
@@ -173,6 +218,6 @@ class TaskTickerApp:
 
     def save_all(self):
         save_tasks(self.tasks)
-        save_settings(self.settings)
         self.settings["default_sort"] = self.sort_key.get()
-        self.settings["default_group"] = self.group_filter.get()        
+        self.settings["default_group"] = self.group_filter.get()
+        save_settings(self.settings)

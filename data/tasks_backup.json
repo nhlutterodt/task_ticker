@@ -2,34 +2,53 @@
     {
         "id": "dff2baa7-f1cd-4393-8403-a66398c719ea",
         "task": "1",
-        "status": "pending",
         "group": "Personal",
         "due_date": "2025-04-22",
         "created_at": "2025-04-22T09:04:49.036301",
         "priority": "normal",
+        "status": "pending",
         "sequence": 1,
-        "depends_on": null
+        "depends_on": null,
+        "notes": "",
+        "tags": []
     },
     {
         "id": "1f38b1a4-994c-4067-896b-d55e93bca389",
         "task": "2",
-        "status": "pending",
         "group": "Personal",
         "due_date": "2025-04-22",
         "created_at": "2025-04-22T09:04:51.128868",
         "priority": "normal",
+        "status": "done",
         "sequence": 2,
-        "depends_on": null
+        "depends_on": null,
+        "notes": "",
+        "tags": []
     },
     {
         "id": "d22e1567-86a8-4f07-8fbb-7af6e3976443",
         "task": "3",
-        "status": "pending",
         "group": "Personal",
         "due_date": "2025-04-22",
         "created_at": "2025-04-22T09:04:52.734898",
         "priority": "normal",
+        "status": "pending",
         "sequence": 3,
-        "depends_on": null
+        "depends_on": null,
+        "notes": "",
+        "tags": []
+    },
+    {
+        "id": "7336151b-3619-445d-83c5-e6b2c99f9d42",
+        "task": "4",
+        "group": "Personal",
+        "due_date": "2025-04-22",
+        "created_at": "2025-04-22T09:05:17.238711",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 4,
+        "depends_on": "1f38b1a4-994c-4067-896b-d55e93bca389",
+        "notes": "",
+        "tags": []
     }
 ]
