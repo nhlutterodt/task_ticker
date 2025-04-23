@@ -95,6 +95,50 @@ Task Ticker is a robust task management application designed to help users organ
   Provides functionality for managing tasks and notes, including saving and loading data to/from JSON files, ensuring the data directory structure, creating backups, and recovering from file corruption.  
   **Functions**: `ensure_data_dir`, `save_tasks`, `load_notes`, `load_tasks`, `backup_exists`, `recover_from_backup`
 
+## Debugging & Introspection Framework
+
+Task Ticker includes a modular debug framework for robust logging, diagnostics, and event tracing across all modules.
+
+### Features
+- **Centralized Logging**: Timestamped logs with configurable levels (DEBUG, INFO, etc.), output as pretty text, JSON, or both.
+- **Non-Invasive Decorators**: Use `@debug_trace` to automatically log function calls, arguments, return values, and exceptions.
+- **Ad Hoc Tracing**: Use `trace()` for contextual, on-demand debug messages anywhere in the codebase.
+- **Configurable Output**: Logs can be sent to the console, to `logs/task_ticker.log`, or both. Control via environment variables or `debug/config.py`.
+- **Minimal Overhead**: When disabled, the framework adds negligible runtime cost.
+
+### Usage Examples
+
+```python
+from debug import debug_trace, trace
+
+@debug_trace
+def validate_task(task):
+    # ... task validation logic ...
+    return True
+
+trace("Main window loaded", context="ui")
+```
+
+#### Environment Variables
+- `DEBUG=1` — Enable debug logging
+- `DEBUG_LEVEL=DEBUG` — Set log level
+- `DEBUG_FORMAT=both` — Output format: `pretty`, `json`, or `both`
+- `DEBUG_LOGFILE=logs/task_ticker.log` — Log file path (default: logs/task_ticker.log)
+
+#### Example: Enabling Debug Logging
+```bash
+set DEBUG=1
+set DEBUG_FORMAT=both
+python main.py
+```
+
+### Integration Points
+- Decorate functions in `logic/`, `models/`, or `storage/` for automatic tracing.
+- Use `trace()` in `ui/app.py` or controllers to log UI and user events.
+- All logs are human-readable and machine-parseable for future analysis or visualization.
+
+---
+
 ## How It Works
 
 1. **Task Management**: Users can create tasks with metadata such as due dates, priorities, tags, and dependencies. Tasks can also have associated notes for additional details.

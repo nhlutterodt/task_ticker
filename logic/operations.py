@@ -52,6 +52,7 @@ import copy
 
 from models.task import Task
 from notes.manager import NotesManager
+from debug import debug_trace
 
 
 # ==============================
@@ -77,6 +78,7 @@ def toggle_status(task: Task, task_lookup: Dict[str, Task]) -> Optional[Task]:
 
 notes_manager = NotesManager()
 
+@debug_trace
 def complete_task(task, task_lookup):
     """
     Mark a task as completed and auto-generate a summary note.

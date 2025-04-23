@@ -27,6 +27,7 @@ from ui.app import TaskTickerApp
 import logging
 import time
 import os
+from debug import trace
 
 # Create logs directory if not exists
 os.makedirs("logs", exist_ok=True)
@@ -40,12 +41,12 @@ logging.basicConfig(
 
 if __name__ == "__main__":
     start_time = time.time()
-    logging.info("Starting Task Ticker application...")
+    trace("Starting Task Ticker application...", context="startup")
 
     root = tk.Tk()
     app = TaskTickerApp(root)
     root.mainloop()
 
     duration = time.time() - start_time
-    logging.info("Application closed.")
-    logging.info(f"Exiting Task Ticker... Uptime: {duration:.2f} seconds")
+    trace("Application closed.", context="shutdown")
+    trace(f"Exiting Task Ticker... Uptime: {duration:.2f} seconds", context="shutdown")

@@ -106,6 +106,7 @@ from ui.components.note_editor import NoteEditor
 from ui.notes_editor import NotesEditor
 from ui.notes_viewer import NotesViewer
 from notes.manager import NotesManager
+from debug import trace
 
 ALL_GROUPS_LABEL = "All Groups"
 ALL_TAGS_LABEL = "All Tags"
@@ -341,6 +342,8 @@ class TaskTickerApp:
 
         if selected_idx is not None and selected_idx < len(self.visible_tasks):
             self.task_listbox.select_set(selected_idx)
+
+        trace("Task list rendered", context="ui")
 
     def toggle_filter_with_notes(self):
         self.settings["filter_with_notes"] = not self.settings.get("filter_with_notes", False)
