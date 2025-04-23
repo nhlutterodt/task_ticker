@@ -1,6 +1,18 @@
 '''
 logic/validation.py - Task Validation Logic
+
 Author: Neils Haldane-Lutterodt
+Description: This module contains functions and logic to validate tasks and task graphs.
+It ensures tasks adhere to defined rules, checks for dependency issues, detects cycles,
+and validates group-based constraints such as unique task names and priority exclusivity.
+
+Functions:
+- validate_task_creation: Validates a single task against rules during creation.
+- validate_task_graph: Validates a collection of tasks for structural and rule-based issues.
+- validate_batch_conflicts: Checks for conflicting high-priority tasks in a batch.
+
+Usage:
+Import this module and call the appropriate validation function with the required inputs.
 '''
 
 from typing import List, Dict, Optional

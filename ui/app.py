@@ -1,4 +1,74 @@
 '''
+"""
+Task Ticker GUI Application
+This module implements the main graphical user interface (GUI) for the Task Ticker application. 
+It provides functionality for managing tasks, including adding, editing, filtering, sorting, 
+and performing batch operations. The application supports features such as strict mode, 
+recurrence, dependency validation, and undo/redo functionality.
+Classes:
+    TaskTickerApp:
+        The main application class that initializes and manages the GUI, task data, and user interactions.
+Functions:
+    __init__(root):
+        Initializes the application, loads tasks and settings, and sets up the GUI components.
+    build_ui():
+        Constructs the graphical user interface, including menus, controls, and task list display.
+    toggle_strict_mode():
+        Toggles the strict mode setting and saves the updated configuration.
+    add_task():
+        Adds a new task to the task list after validating input and dependencies.
+    render_task_list():
+        Updates the task list display based on the current filters and sorting options.
+    edit_notes_for_selected(event):
+        Opens a notes editor for the selected task in the task list.
+    open_notes_editor(task):
+        Displays a separate window for editing the notes of a specific task.
+    toggle_selected_task():
+        Toggles the completion status of the selected task and handles undo/redo registration.
+    delete_task():
+        Deletes the selected task from the task list and handles undo/redo registration.
+    perform_undo():
+        Performs an undo operation for the last action.
+    perform_redo():
+        Performs a redo operation for the last undone action.
+    update_group_filter():
+        Updates the group filter dropdown menu with available groups.
+    update_tag_filter():
+        Updates the tag filter dropdown menu with available tags.
+    update_dependency_dropdown():
+        Updates the dependency dropdown menu with available tasks.
+    update_all_filters():
+        Updates all filter dropdown menus (group, tag, dependency).
+    save_all():
+        Saves the current tasks and settings to persistent storage.
+    mark_all_done():
+        Marks all tasks as done using the controller's batch operation.
+    clear_by_filter():
+        Clears tasks based on the current filter using the controller's batch operation.
+    batch_edit_tags():
+        Opens the batch edit tags operation via the controller.
+    move_to_group():
+        Moves tasks to a specified group using the controller.
+Constants:
+    ALL_GROUPS_LABEL:
+        Label for the "All Groups" option in the group filter dropdown.
+    ALL_TAGS_LABEL:
+        Label for the "All Tags" option in the tag filter dropdown.
+Dependencies:
+    - tkinter: Provides the GUI framework.
+    - tkcalendar: Used for date entry widgets.
+    - uuid: Generates unique identifiers for tasks.
+    - datetime: Handles date and time operations.
+    - models.task: Defines the Task and TaskMeta classes.
+    - logic.operations: Provides task-related operations such as filtering, sorting, and validation.
+    - logic.validation: Validates task creation rules.
+    - storage.file_io: Handles loading and saving tasks to persistent storage.
+    - storage.settings: Manages application settings.
+    - ui.controller: Provides batch operation functionality.
+    - ui.undo: Implements undo/redo functionality.
+Author:
+    Neils Haldane-Lutterodt
+"""
 ui/app.py - Task Ticker GUI with Strict Mode and Recurrence Support
 Author: Neils Haldane-Lutterodt
 '''

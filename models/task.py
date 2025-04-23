@@ -1,12 +1,58 @@
 '''
+"""
+================================
+This module defines the `Task` and `TaskMeta` classes for managing tasks in the Task Ticker application.
+Classes:
+--------
+- TaskMeta:
+    Encapsulates metadata for a task, including:
+    - Group: Categorization of the task.
+    - Due Date: Deadline for the task.
+    - Priority: Importance level (e.g., normal, high).
+    - Status: Current state of the task (e.g., pending, done).
+    - Sequence: Order of the task in a list.
+    - Dependencies: Tasks that must be completed before this one.
+    - Notes: Additional information about the task.
+    - Tags: Labels for categorization.
+    - Recurrence: Rules for repeating tasks.
+    - Parent ID: Identifier for the parent task (if any).
+    - Subtasks: List of IDs for dependent subtasks.
+    - Task ID: Unique identifier for the task.
+    - Created At: Timestamp of task creation.
+- Task:
+    Represents a task with the following features:
+    - Serialization to and from dictionary format.
+    - Dependency checks to determine if a task is blocked.
+    - Status updates and checks (e.g., is_done).
+    - Parent task blocking checks based on subtasks.
+Methods:
+--------
+- Task.to_dict():
+    Serializes the `Task` object into a dictionary.
+- Task.from_dict(data: dict):
+    Creates a `Task` object from a dictionary.
+- Task.is_done() -> bool:
+    Checks if the task's status is marked as "done".
+- Task.is_blocked(task_lookup: dict) -> bool:
+    Determines if the task is blocked by an incomplete dependency.
+- Task.is_parent_blocked(task_lookup: dict) -> bool:
+    Checks if the task is blocked due to any incomplete subtasks.
+- Task.__str__():
+    Returns a string representation of the task, including its sequence, status, and due date.
+"""
 models/task.py - Task Data Model
 Author: Neils Haldane-Lutterodt
+
+This module defines the Task and TaskMeta classes for managing tasks in the Task Ticker application.
+- TaskMeta: Encapsulates metadata for a task, including priority, status, tags, and recurrence.
+- Task: Represents a task with methods for serialization, dependency checks, and status updates.
 '''
 
 import uuid
 from datetime import datetime
 from typing import List, Optional, Dict
 from dataclasses import dataclass, field
+from models.note import Note
 
 
 @dataclass
@@ -41,6 +87,7 @@ class Task:
         self.sequence   = m.sequence
         self.depends_on = m.depends_on
         self.notes      = m.notes.strip()
+        self.note_id    = None  # New field for decoupling notes
         self.tags       = m.tags
         self.recurrence = m.recurrence
         self.parent_id  = m.parent_id
@@ -58,6 +105,7 @@ class Task:
             "sequence": self.sequence,
             "depends_on": self.depends_on,
             "notes": self.notes,
+            "note_id": self.note_id,  # Include note_id in serialization
             "tags": self.tags,
             "recurrence": self.recurrence,
             "parent_id": self.parent_id,
@@ -81,7 +129,9 @@ class Task:
             task_id=data.get("id"),
             created_at=data.get("created_at")
         )
-        return cls(task=data.get("task", ""), meta=meta)
+        task = cls(task=data.get("task", ""), meta=meta)
+        task.note_id = data.get("note_id")  # Load note_id if present
+        return task
 
     def is_done(self) -> bool:
         return self.status == "done"

@@ -1,6 +1,14 @@
 '''
 logic/operations.py - Core Task Operations
 Author: Neils Haldane-Lutterodt
+
+This module provides the core logic for managing tasks, including:
+- Toggling task statuses with dependency and subtask validation.
+- Handling recurring tasks with support for shallow and deep cloning.
+- Filtering and sorting tasks based on various criteria.
+- Validating task dependencies to ensure logical due dates.
+- Providing recurrence presets for task scheduling.
+
 '''
 
 from typing import List, Optional, Dict
