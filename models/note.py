@@ -16,10 +16,12 @@ Attributes:
     tags (List[str]): A list of tags associated with the note for categorization.
     label (Optional[str]): An optional label for the note.
     history (List[str]): A list of historical changes or revisions of the note.
+    task_id (Optional[str]): An optional identifier linking the note to a task.
 """
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
+import uuid
 
 @dataclass
 class Note:
@@ -30,6 +32,7 @@ class Note:
     tags: List[str] = field(default_factory=list)
     label: Optional[str] = None
     history: List[str] = field(default_factory=list)
+    task_id: Optional[str] = None  # Link to associated task, if any
 
     def to_dict(self) -> dict:
         return {
@@ -39,7 +42,8 @@ class Note:
             "updated_at": self.updated_at.isoformat() if isinstance(self.updated_at, datetime) else self.updated_at,
             "tags": self.tags,
             "label": self.label,
-            "history": self.history
+            "history": self.history,
+            "task_id": self.task_id  # Ensure task_id is serialized
         }
 
     @classmethod
@@ -51,5 +55,23 @@ class Note:
             updated_at=datetime.fromisoformat(data["updated_at"]) if isinstance(data.get("updated_at"), str) else data.get("updated_at"),
             tags=data.get("tags", []),
             label=data.get("label"),
-            history=data.get("history", [])
+            history=data.get("history", []),
+            task_id=data.get("task_id")  # Ensure task_id is deserialized
+        )
+
+    @classmethod
+    def create(cls, content: str, tags: Optional[list] = None, label: Optional[str] = None):
+        """
+        Create a new Note instance with a unique ID and timestamps.
+        """
+        now = datetime.now()
+        return cls(
+            id=str(uuid.uuid4()),
+            content=content,
+            created_at=now,
+            updated_at=now,
+            tags=tags or [],
+            label=label,
+            history=[],
+            task_id=None
         )

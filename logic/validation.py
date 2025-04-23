@@ -10,6 +10,7 @@ Functions:
 - validate_task_creation: Validates a single task against rules during creation.
 - validate_task_graph: Validates a collection of tasks for structural and rule-based issues.
 - validate_batch_conflicts: Checks for conflicting high-priority tasks in a batch.
+- validate_note_link: Validates the integrity of task-note references.
 
 Usage:
 Import this module and call the appropriate validation function with the required inputs.
@@ -165,3 +166,17 @@ def validate_batch_conflicts(tasks: List[Task]) -> bool:
                 return False
             seen[t.group] = True
     return True
+
+
+def validate_note_link(note_id: str, linked_ids: set[str]) -> bool:
+    """
+    Validate if a note ID is linked to any task.
+
+    Args:
+        note_id (str): The ID of the note to validate.
+        linked_ids (set[str]): Set of note IDs that are linked to tasks.
+
+    Returns:
+        bool: True if the note ID is linked, False otherwise.
+    """
+    return note_id in linked_ids

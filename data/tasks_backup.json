@@ -69,20 +69,64 @@
         "subtasks": []
     },
     {
-        "id": "70fb0299-200d-4aee-9c0d-edf28b1dc3be",
-        "task": "Test",
-        "group": "Test",
+        "id": "23d5d052-2b78-4233-9415-e7a758e3a54d",
+        "task": "drthy",
+        "group": "Personal",
         "due_date": "2025-04-23",
-        "created_at": "2025-04-23T13:45:18.868726",
+        "created_at": "2025-04-23T15:58:41.396705",
         "priority": "normal",
         "status": "pending",
         "sequence": 1,
         "depends_on": null,
         "notes": "",
         "note_id": null,
-        "tags": [
-            "Test"
-        ],
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
+    },
+    {
+        "id": "0faf3a4d-8ed2-443c-954d-b3d101d0d7cb",
+        "task": "dsfgs",
+        "group": "Personal",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T16:07:07.533853",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 1,
+        "depends_on": null,
+        "notes": "",
+        "note_id": null,
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
+    },
+    {
+        "id": "a016b19a-48f2-40bd-bf0e-c85cfdde6486",
+        "task": "asdfas",
+        "group": "Personal",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T16:07:12.006555",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 2,
+        "depends_on": "dff2baa7-f1cd-4393-8403-a66398c719ea",
+        "notes": "",
+        "note_id": null,
+        "tags": [],
         "recurrence": {
             "frequency": "none",
             "interval": 0,

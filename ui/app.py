@@ -66,6 +66,11 @@ Dependencies:
     - storage.settings: Manages application settings.
     - ui.controller: Provides batch operation functionality.
     - ui.undo: Implements undo/redo functionality.
+    - models.note: Defines the Note class.
+    - logic.note_manager: Manages note creation and updates.
+    - ui.components.note_editor: Provides the NoteEditor component.
+    - ui.notes_editor: Provides the NotesEditor component.
+    - notes.manager: Manages notes for tasks.
 Author:
     Neils Haldane-Lutterodt
 """
@@ -96,9 +101,13 @@ from ui.undo import UndoManager
 from models.note import Note
 from logic.note_manager import create_note, update_note
 from ui.components.note_editor import NoteEditor
+from ui.notes_editor import NotesEditor
+from notes.manager import NotesManager
 
 ALL_GROUPS_LABEL = "All Groups"
 ALL_TAGS_LABEL = "All Tags"
+NO_SELECTION_TITLE = "No Selection"
+NO_SELECTION_MSG = "Please select a task."
 
 class TaskTickerApp:
     def __init__(self, root):
@@ -113,6 +122,7 @@ class TaskTickerApp:
         self.visible_tasks = []
         self.task_lookup = create_task_lookup(self.tasks)
         self.undo_manager = UndoManager(limit=20)
+        self.notes_manager = NotesManager()
 
         self.filter_mode = tk.StringVar(value="All")
         self.group_filter = tk.StringVar(value=self.settings.get("default_group", ALL_GROUPS_LABEL))
@@ -128,6 +138,7 @@ class TaskTickerApp:
         self.build_ui()
         self.update_all_filters()
         self.render_task_list()
+        self.root.bind("<Control-n>", lambda _: self.context_menu_add_note())
 
     def build_ui(self):
         self.menu = tk.Menu(self.root)
@@ -139,6 +150,11 @@ class TaskTickerApp:
             onvalue=1,
             offvalue=0,
             command=self.toggle_strict_mode
+        )
+        options_menu.add_checkbutton(
+            label="Show Only Tasks with Notes",
+            variable=tk.BooleanVar(value=self.settings.get("filter_with_notes", False)),
+            command=self.toggle_filter_with_notes
         )
         self.menu.add_cascade(label="Options", menu=options_menu)
 
@@ -195,9 +211,14 @@ class TaskTickerApp:
         self.task_listbox = tk.Listbox(list_frame, width=100, height=20, selectmode="extended")
         self.task_listbox.pack(side=tk.LEFT)
         self.task_listbox.bind("<Double-Button-1>", self.edit_notes_for_selected)
+        self.task_listbox.bind("<Button-3>", self.show_context_menu)
         scrollbar = tk.Scrollbar(list_frame, command=self.task_listbox.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.task_listbox.config(yscrollcommand=scrollbar.set)
+
+        self.context_menu = tk.Menu(self.root, tearoff=0)
+        self.context_menu.add_command(label="Add Note", command=self.context_menu_add_note)
+        self.context_menu.add_command(label="View Notes", command=self.context_menu_view_notes)
 
         btns = tk.Frame(self.root)
         btns.pack(pady=10)
@@ -280,30 +301,46 @@ class TaskTickerApp:
         self.save_all()
         self.render_task_list()
 
+    def _get_filtered_tasks(self):
+        """
+        Return tasks filtered by status, group, tag, and notes filter, then sorted.
+        """
+        tasks = filter_tasks(self.tasks, self.filter_mode.get(), self.group_filter.get())
+        tag = self.tag_filter.get()
+        if tag != ALL_TAGS_LABEL:
+            tasks = [t for t in tasks if tag in t.tags]
+        tasks = sort_tasks(tasks, self.sort_key.get())
+        if self.settings.get("filter_with_notes", False):
+            tasks = [t for t in tasks if len(self.notes_manager.get_notes_by_task(t.id)) > 0]
+        return tasks
+
+    def _format_task_display(self, t):
+        """Return formatted display string for a task."""
+        blocked = "⛔" if t.is_blocked(self.task_lookup) else ""
+        tags = f" 🏷️ {', '.join(t.tags)}" if t.tags else ""
+        recur = f" 🔁 {t.recurrence['frequency'].capitalize()}" if t.recurrence.get("frequency") != "none" else ""
+        notes_count = len(self.notes_manager.get_notes_by_task(t.id))
+        notes_icon = f" 📝({notes_count})" if notes_count > 0 else ""
+        return f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}){tags}{recur}{notes_icon} {blocked}"
+
     def render_task_list(self):
         try:
             selected_idx = self.task_listbox.curselection()[0]
         except IndexError:
             selected_idx = None
 
-        self.visible_tasks = filter_tasks(self.tasks, self.filter_mode.get(), self.group_filter.get())
-        tag = self.tag_filter.get()
-        if tag != ALL_TAGS_LABEL:
-            self.visible_tasks = [t for t in self.visible_tasks if tag in t.tags]
-        self.visible_tasks = sort_tasks(self.visible_tasks, self.sort_key.get())
-
+        self.visible_tasks = self._get_filtered_tasks()
         self.task_listbox.delete(0, tk.END)
         for t in self.visible_tasks:
-            blocked = "⛔" if t.is_blocked(self.task_lookup) else ""
-            tags = f" 🏷️ {', '.join(t.tags)}" if t.tags else ""
-            recur = f" 🔁 {t.recurrence['frequency'].capitalize()}" if t.recurrence.get("frequency") != "none" else ""
-            self.task_listbox.insert(
-                tk.END,
-                f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}){tags}{recur} {blocked}"
-            )
+            self.task_listbox.insert(tk.END, self._format_task_display(t))
 
         if selected_idx is not None and selected_idx < len(self.visible_tasks):
             self.task_listbox.select_set(selected_idx)
+
+    def toggle_filter_with_notes(self):
+        self.settings["filter_with_notes"] = not self.settings.get("filter_with_notes", False)
+        self.save_all()
+        self.render_task_list()
 
     def edit_notes_for_selected(self, event):
         try:
@@ -354,6 +391,33 @@ class TaskTickerApp:
         # Launch reusable NoteEditor component
         NoteEditor(self.root, note, save_callback)
 
+    def open_note_editor(self, task_id: str):
+        """
+        Launch the NotesEditor for the given task ID.
+        """
+        task = self.task_lookup.get(task_id)
+        if not task:
+            messagebox.showerror("Error", "Task not found.")
+            return
+
+        notes = self.notes_manager.get_notes_by_task(task_id)
+        if not notes:
+            note = self.notes_manager.create_note("", task_id=task_id)
+        else:
+            note = notes[0]  # Assuming one note per task for simplicity
+
+        def save_callback(updated_note):
+            self.notes_manager.update_note(
+                note_id=updated_note.id,
+                content=updated_note.content,
+                tags=updated_note.tags,
+                label=updated_note.label
+            )
+            self.save_all()
+
+        templates = self.notes_manager.get_all_templates()
+        NotesEditor(self.root, note, save_callback, templates=templates)
+
     def toggle_selected_task(self):
         try:
             idx = self.task_listbox.curselection()[0]
@@ -386,7 +450,7 @@ class TaskTickerApp:
         except ValueError as ve:
             messagebox.showwarning("Blocked", str(ve))
         except IndexError:
-            messagebox.showerror("No Selection", "Please select a task.")
+            messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
 
     def delete_task(self):
         try:
@@ -408,7 +472,7 @@ class TaskTickerApp:
             self.save_all()
             self.render_task_list()
         except IndexError:
-            messagebox.showerror("Error", "No task selected.")
+            messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
 
     def perform_undo(self):
         if self.undo_manager.undo():
@@ -473,3 +537,50 @@ class TaskTickerApp:
 
     def move_to_group(self):
         self.controller.move_to_group()
+
+    def show_context_menu(self, event):
+        try:
+            self.task_listbox.selection_clear(0, tk.END)
+            idx = self.task_listbox.nearest(event.y)
+            self.task_listbox.selection_set(idx)
+            self.context_menu.post(event.x_root, event.y_root)
+        except Exception as e:
+            print(f"Error showing context menu: {e}")
+
+    def add_note_to_selected_task(self):
+        selected_idx = self.task_listbox.curselection()
+        if not selected_idx:
+            messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
+            return
+        task_id = self.visible_tasks[selected_idx[0]].id
+        self.open_note_editor(task_id)
+
+    def view_notes_for_selected_task(self):
+        selected_idx = self.task_listbox.curselection()
+        if not selected_idx:
+            messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
+            return
+        task_id = self.visible_tasks[selected_idx[0]].id
+        notes = self.notes_manager.get_notes_by_task(task_id)
+        if not notes:
+            messagebox.showinfo("No Notes", "No notes found for the selected task.")
+        else:
+            # Placeholder for future notes browser implementation
+            messagebox.showinfo("Notes", f"Found {len(notes)} note(s) for the task.")
+    
+    def context_menu_add_note(self):
+        selected = self.controller.get_selected_tasks()
+        if not selected:
+            messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
+            return
+        task = selected[0]
+        self.open_note_editor(task.id)
+
+    def context_menu_view_notes(self):
+        selected = self.controller.get_selected_tasks()
+        if not selected:
+            messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
+            return
+        task = selected[0]
+        # Open editor for existing notes
+        self.open_note_editor(task.id)

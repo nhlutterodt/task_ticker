@@ -69,3 +69,17 @@ def delete_note(note_id: str) -> bool:
         return False
     save_notes(filtered)
     return True
+
+
+def delete_unlinked(notes: dict[str, Note], linked_ids: set[str]) -> dict[str, Note]:
+    """
+    Delete notes that are not linked to any task.
+
+    Args:
+        notes (dict[str, Note]): Dictionary of notes keyed by note ID.
+        linked_ids (set[str]): Set of note IDs that are linked to tasks.
+
+    Returns:
+        dict[str, Note]: Updated dictionary of notes with unlinked notes removed.
+    """
+    return {note_id: note for note_id, note in notes.items() if note_id in linked_ids}

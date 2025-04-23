@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 from models.note import Note
+from notes.utils import diff_notes
+from datetime import datetime
+from typing import Optional, List
 
 class NoteEditor:
     """
@@ -51,15 +54,14 @@ class NoteEditor:
             return
 
         # Apply updates to note
-        updated_note = Note(
-            id=self.note.id,
-            content=content,
-            created_at=self.note.created_at,
-            updated_at=self.note.updated_at,
-            tags=tags,
-            label=label,
-            history=list(self.note.history)
+        updated_note = edit_note(
+            note=self.note,
+            new_content=content,
+            new_label=label,
+            new_tags=tags,
+            preview_diff=True
         )
+
         # Invoke callback
         try:
             self.save_callback(updated_note)
@@ -68,3 +70,35 @@ class NoteEditor:
             return
 
         self.window.destroy()
+
+def edit_note(note: Note, new_content: str, new_label: Optional[str] = None, new_tags: Optional[List[str]] = None, preview_diff: bool = False) -> Note:
+    """
+    Edit a note's content, label, and tags with an optional diff preview.
+
+    Args:
+        note (Note): The note to edit.
+        new_content (str): The new content for the note.
+        new_label (Optional[str]): The new label for the note.
+        new_tags (Optional[List[str]]): The new tags for the note.
+        preview_diff (bool): Whether to preview the diff before saving.
+
+    Returns:
+        Note: The updated note.
+    """
+    updated_note = Note(
+        id=note.id,
+        content=new_content,
+        created_at=note.created_at,
+        updated_at=datetime.now(),
+        tags=new_tags or note.tags,
+        label=new_label or note.label,
+        history=note.history + [note.content]
+    )
+
+    if preview_diff:
+        diffs = diff_notes(note, updated_note)
+        print("Preview of changes:")
+        for field, change in diffs.items():
+            print(f"{field}: {change[0]} -> {change[1]}")
+
+    return updated_note

@@ -157,5 +157,10 @@ class Task:
                 return True
         return False
 
+    def link_note(self, note: Note):
+        self.notes = note
+        self.note_id = note.id
+        note.task_id = self.id
+
     def __str__(self):
         return f"[{self.sequence}] {'✔' if self.is_done() else ''} {self.task} (Due: {self.due_date})"

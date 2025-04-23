@@ -39,3 +39,11 @@ def save_notes(notes: List[Note]) -> None:
             json.dump([note.to_dict() for note in notes], f, indent=4)
     except Exception as e:
         logging.error(f"[Notes Save Error] Failed to write notes storage: {e}")
+
+
+def get_notes_for_task(task_id: str) -> List[Note]:
+    """
+    Retrieve all notes linked to a specific task ID.
+    """
+    notes = load_notes()
+    return [note for note in notes if note.task_id == task_id]

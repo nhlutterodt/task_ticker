@@ -17,6 +17,7 @@ from uuid import uuid4
 import copy
 
 from models.task import Task
+from notes.manager import NotesManager
 
 
 # ==============================
@@ -38,6 +39,29 @@ def toggle_status(task: Task, task_lookup: Dict[str, Task]) -> Optional[Task]:
         return clone_recurring_task(task, task_lookup)
 
     return None
+
+
+notes_manager = NotesManager()
+
+def complete_task(task, task_lookup):
+    """
+    Mark a task as completed and auto-generate a summary note.
+
+    Args:
+        task (Task): The task to mark as completed.
+        task_lookup (dict): A dictionary of tasks for dependency checks.
+
+    Returns:
+        Task: The updated task.
+    """
+    task.status = "done"
+    task.updated_at = datetime.now().isoformat()
+
+    # Auto-generate a summary note
+    summary_content = f"Task '{task.task}' was completed on {task.updated_at}."
+    notes_manager.create_note(content=summary_content, task_id=task.id)
+
+    return task
 
 
 # ==============================

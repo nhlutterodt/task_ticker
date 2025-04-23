@@ -22,6 +22,8 @@ Methods:
 - move_to_group():
     Moves selected tasks to a specified group, with validation for task creation and batch conflicts, 
     and undo/redo support.
+- add_note_to_task(task_id, note):
+    Adds a note to the specified task.
 Dependencies:
 -------------
 - tkinter: Used for UI components like message boxes and dialogs.
@@ -37,14 +39,57 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox
 from logic.operations import toggle_status, filter_tasks
 from logic.validation import validate_task_creation, validate_batch_conflicts
+from models.note import Note
 
 class TaskController:
     def __init__(self, app):
         self.app = app
 
     def get_selected_tasks(self):
+        """
+        Retrieves the currently selected tasks from the task listbox.
+        """
         idxs = self.app.task_listbox.curselection()
         return [self.app.visible_tasks[i] for i in idxs]
+
+    def add_note_to_task(self, task_id: str, note: Note):
+        """
+        Adds a note to the specified task.
+        """
+        task = self.app.task_lookup.get(task_id)
+        if not task:
+            raise ValueError("Task not found.")
+
+        task.link_note(note)
+        self.app.save_all()
+        self.app.render_task_list()
+
+    def save_note_for_task(self, note: Note):
+        """
+        Save or update a note via the NotesManager, link to the task, and refresh UI.
+        """
+        # Persist the note to storage
+        try:
+            # Determine if existing note
+            if note.id in self.app.notes_manager.notes:
+                persisted = self.app.notes_manager.update_note(
+                    note_id=note.id,
+                    content=note.content,
+                    tags=note.tags,
+                    label=note.label
+                )
+            else:
+                persisted = self.app.notes_manager.create_note(
+                    content=note.content,
+                    tags=note.tags,
+                    label=note.label,
+                    task_id=note.task_id
+                )
+        except Exception as e:
+            messagebox.showerror("Note Save Failed", str(e))
+            return
+        # Link the persisted note to the task and update UI
+        self.add_note_to_task(persisted.task_id, persisted)
 
     def batch_mark_done(self):
         tasks = self.get_selected_tasks()
