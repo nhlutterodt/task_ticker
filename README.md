@@ -1,72 +1,111 @@
 # Task Ticker 📝
 
-A modular Python desktop to-do list application featuring:
+Task Ticker is a robust task management application designed to help users organize, track, and manage their tasks efficiently. It features a graphical user interface (GUI) built with Tkinter and provides advanced functionalities such as strict mode, recurrence, dependency validation, undo/redo operations, and batch task management.
 
-- ✅ Task management with due dates, groups, and statuses
-- 🔗 Dependencies and sequence ordering
-- 🗃 Persistent JSON storage with backup/recovery
-- 🎨 GUI powered by Tkinter and tkcalendar
+## Features
 
----
+### Core Functionality
 
-## 🛠 Features
+- **Task Management**: Add, edit, delete, and toggle tasks with ease.
+- **Notes Integration**: Attach detailed notes to tasks for additional context.
+- **Filtering and Sorting**: Filter tasks by status, group, or tags, and sort them by due date, priority, or sequence.
+- **Dependency Validation**: Ensure tasks respect dependencies and validate task creation rules.
+- **Recurrence Support**: Define recurring tasks with customizable rules.
 
-- Add, delete, and toggle tasks
-- Filter by status and group
-- Sort by due date, created time, priority, or sequence
-- Set task dependencies (blocked tasks can't be marked done)
-- Auto-save and user preferences
+### Advanced Features
 
----
+- **Strict Mode**: Enforce stricter rules for task creation and management.
+- **Undo/Redo**: Seamlessly undo or redo actions with a stack-based mechanism.
+- **Batch Operations**: Perform batch updates, such as marking tasks as done, editing tags, or moving tasks to a group.
+- **Backup and Recovery**: Automatically back up task data and recover from backups if needed.
 
-## 📁 Project Structure
+## Application Structure
 
-```
-task_ticker/
-├── main.py               # App entry point
-├── models/
-│   └── task.py           # Task class and helpers
-├── storage/
-│   ├── file_io.py        # JSON task I/O
-│   └── settings.py       # Load/save app settings
-├── logic/
-│   └── operations.py     # Core logic and validation
-├── ui/
-│   └── app.py            # GUI definition (Tkinter)
-├── data/                 # Storage directory
-│   ├── tasks.json
-│   ├── settings.json
-│   └── tasks_backup.json
-└── logs/
-    └── task_ticker.log
-```
+### 1. **Main Application**
 
----
+- **File**: `main.py`
+- Entry point for the application. Initializes the GUI and logs application events.
 
-## ▶️ Getting Started
+### 2. **Models**
+
+- **File**: `models/note.py`
+  - Defines the `Note` dataclass for managing note content, tags, and history.
+- **File**: `models/task.py`
+  - Defines the `Task` and `TaskMeta` classes for managing tasks, including serialization, dependency checks, and recurrence.
+
+### 3. **Storage**
+
+- **File**: `storage/file_io.py`
+  - Handles saving and loading tasks and notes to/from JSON files, ensuring data integrity with backups.
+- **File**: `storage/settings.py`
+  - Manages application settings with validation against a schema.
+
+### 4. **Utilities**
+
+- **File**: `notes/utils.py`
+  - Provides utility functions for parsing links, comparing notes, and exporting notes in JSON or Markdown formats.
+
+### 5. **User Interface**
+
+- **File**: `ui/app.py`
+  - Implements the main GUI for the application, including task list rendering, filters, and user interactions.
+- **File**: `ui/undo.py`
+  - Provides the `UndoManager` class for managing undo and redo operations.
+- **File**: `ui/controller.py`
+  - Handles batch operations and task-related interactions, such as editing tags or moving tasks to groups.
+
+## How It Works
+
+1. **Task Management**: Users can create tasks with metadata such as due dates, priorities, tags, and dependencies. Tasks can also have associated notes for additional details.
+2. **Filtering and Sorting**: Tasks can be filtered by status, group, or tags and sorted by various criteria.
+3. **Batch Operations**: Perform operations on multiple tasks at once, such as marking them as done or moving them to a new group.
+4. **Undo/Redo**: Every action is tracked, allowing users to undo or redo changes as needed.
+5. **Data Persistence**: Tasks and notes are saved to JSON files, with automatic backups to prevent data loss.
+
+## Getting Started
 
 ### Prerequisites
 
-Install dependencies:
+- Python 3.8 or higher
+- Required libraries: `tkinter`, `tkcalendar`
 
-```bash
-pip install -r requirements.txt
-```
+### Installation
 
-### Run the app
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-repo/task-ticker.git
+   cd task-ticker
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pip install tkcalendar
+   ```
+
+### Running the Application
+
+Run the main script to start the application:
 
 ```bash
 python main.py
 ```
 
----
+## File Overview
 
-## 📦 Dependencies
+| File/Directory         | Description                                                                 |
+|-------------------------|-----------------------------------------------------------------------------|
+| `main.py`              | Entry point for the application.                                           |
+| `models/`              | Contains data models for tasks and notes.                                  |
+| `storage/`             | Handles file I/O and settings management.                                  |
+| `notes/utils.py`       | Utility functions for notes, including parsing and exporting.              |
+| `ui/`                  | Implements the GUI, undo/redo functionality, and task controllers.         |
 
-- `tkinter` (standard in Python)
-- `tkcalendar`
+## Contributing
 
----
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
-## 🧩 License
-MIT License © Neils Haldane-Lutterodt
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
