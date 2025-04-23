@@ -108,3 +108,4 @@ if __name__ == "__main__":
     summaries = load_summaries()
     markdown = format_markdown(summaries)
     update_readme(markdown, mode=args.mode)
+    print("📘 Module overview section generated successfully.")
