@@ -1,20 +1,33 @@
-'''
-logic/validation.py - Task Validation Logic
+"""
+Task Validation Logic Module
+This module contains functions and logic to validate tasks and task graphs. It ensures tasks adhere to defined rules, checks for dependency issues, detects cycles, and validates group-based constraints such as unique task names and priority exclusivity.
 
-Author: Neils Haldane-Lutterodt
-Description: This module contains functions and logic to validate tasks and task graphs.
-It ensures tasks adhere to defined rules, checks for dependency issues, detects cycles,
-and validates group-based constraints such as unique task names and priority exclusivity.
+Classes:
+    None
 
 Functions:
-- validate_task_creation: Validates a single task against rules during creation.
-- validate_task_graph: Validates a collection of tasks for structural and rule-based issues.
-- validate_batch_conflicts: Checks for conflicting high-priority tasks in a batch.
-- validate_note_link: Validates the integrity of task-note references.
+    validate_task_creation(task: Task, task_lookup: Dict[str, Task], rules: Optional[Dict] = None) -> dict:
+        Validates a single task against rules during creation.
+    validate_task_graph(tasks: List[Task], rules: Optional[Dict] = None) -> Dict:
+        Validates a collection of tasks for structural and rule-based issues.
+    validate_batch_conflicts(tasks: List[Task]) -> bool:
+        Checks for conflicting high-priority tasks in a batch.
+    validate_note_link(note_id: str, linked_ids: set[str]) -> bool:
+        Validates the integrity of task-note references.
 
-Usage:
-Import this module and call the appropriate validation function with the required inputs.
-'''
+Constants:
+    DEFAULT_RULES:
+        A dictionary of default validation rules.
+
+Dependencies:
+    - typing: For type annotations.
+    - datetime: For handling timestamps.
+    - logging: For logging validation issues.
+    - models.task: Provides the Task model.
+
+Author:
+    Neils Haldane-Lutterodt
+"""
 
 from typing import List, Dict, Optional
 from datetime import datetime

@@ -1,17 +1,33 @@
 """
-undo.py - A module for managing undo and redo operations.
-This module provides the `UndoManager` class, which implements a stack-based
-mechanism to handle undo and redo functionality. It allows registering actions
-with corresponding undo and redo operations, and provides methods to perform
-undo and redo actions while maintaining a configurable stack limit.
+Undo Manager Module
+This module provides the `UndoManager` class, which implements a stack-based mechanism to handle undo and redo functionality. It allows registering actions with corresponding undo and redo operations and provides methods to perform undo and redo actions while maintaining a configurable stack limit.
+
 Classes:
-    UndoManager: Manages undo and redo stacks with a configurable limit.
-Usage:
-    - Create an instance of `UndoManager`.
-    - Use `register` to add undo and redo actions.
-    - Call `undo` to perform the last registered undo action.
-    - Call `redo` to reapply the last undone action.
-    - Use `can_undo` and `can_redo` to check if undo or redo operations are possible.
+    UndoManager:
+        Manages undo and redo stacks with a configurable limit.
+
+Functions:
+    __init__(limit=20):
+        Initializes the UndoManager with a specified stack limit.
+    register(undo_action, redo_action):
+        Registers an undo and redo action pair, maintaining the stack limit.
+    can_undo() -> bool:
+        Checks if there are actions available to undo.
+    can_redo() -> bool:
+        Checks if there are actions available to redo.
+    undo() -> bool:
+        Performs the last registered undo action and moves it to the redo stack.
+    redo() -> bool:
+        Reapplies the last undone action and moves it back to the undo stack.
+
+Constants:
+    None
+
+Dependencies:
+    None
+
+Author:
+    Placeholder Author
 """
 class UndoManager:
 

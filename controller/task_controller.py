@@ -1,3 +1,24 @@
+"""
+Task Controller Module
+This module provides the `TaskController` class to manage task-related operations, including fetching notes for specific tasks.
+
+Classes:
+    TaskController:
+        Manages task-related operations and interacts with the NotesManager.
+
+Functions:
+    None
+
+Constants:
+    None
+
+Dependencies:
+    - notes.manager: Provides the NotesManager class for managing notes.
+
+Author:
+    Placeholder Author
+"""
+
 from notes.manager import NotesManager
 
 class TaskController:

@@ -1,38 +1,37 @@
-'''
-Module: utils.py
-Description:
-    This module provides utility functions for handling notes. It includes 
-    functionalities for parsing links, comparing notes, and exporting notes 
-    in various formats. The utilities are designed to work with the `Note` 
-    model and support operations such as extracting URLs, hashtags, and 
-    mentions, identifying differences between notes, and exporting notes 
-    in JSON or Markdown formats.
+"""
+Notes Utilities Module
+This module provides utility functions for handling notes, including parsing links, comparing notes, and exporting notes in various formats. It also includes functionality for computing differences between note versions and fetching notes by task ID.
+
+Classes:
+    None
+
 Functions:
-    - parse_links(content: str) -> Dict[str, List[str]]:
+    parse_links(content: str) -> Dict[str, List[str]]:
         Extracts URLs, hashtags, and mentions from the given text content.
-    - parse_mentions_hashtags_urls(content: str) -> Dict[str, List[str]]:
+    parse_mentions_hashtags_urls(content: str) -> Dict[str, List[str]]:
         Extracts URLs, hashtags, and mentions from the given text content.
-    - diff_notes(old: Note, new: Note) -> Dict[str, List[str]]:
-        Compares two notes and returns the differences in their content, 
-        tags, labels, and updated_at timestamp.
-    - export_notes(notes: Dict[str, Note], format: str = "json") -> str:
-        Exports a dictionary of notes to the specified format, either JSON or 
-        Markdown. Raises a ValueError for unsupported formats.
-    - get_notes_by_task_id(notes: dict[str, Note], task_id: str) -> list[Note]:
+    diff_notes(old: Note, new: Note) -> Dict[str, List[str]]:
+        Compares two notes and returns the differences in their content, tags, labels, and updated_at timestamp.
+    export_notes(notes: Dict[str, Note], format: str = "json") -> str:
+        Exports a dictionary of notes to the specified format, either JSON or Markdown.
+    get_notes_by_task_id(notes: dict[str, Note], task_id: str) -> list[Note]:
         Fetches notes associated with a specific task ID.
-    - diff_note_versions(old_content: str, new_content: str) -> dict:
+    diff_note_versions(old_content: str, new_content: str) -> dict:
         Computes the differences between two versions of note content.
+
+Constants:
+    None
+
 Dependencies:
-    - json
-    - datetime
-    - re
-    - typing (List, Dict)
-    - models.note (Note)
-File: notes/utils.py
-Author: Neils Haldane-Lutterodt
-Description: Utility functions for handling notes, including parsing links, 
-             comparing notes, and exporting notes in various formats.
-'''
+    - json: For JSON serialization.
+    - datetime: For handling timestamps.
+    - re: For regular expression operations.
+    - typing: For type annotations.
+    - models.note: Provides the Note model.
+
+Author:
+    Neils Haldane-Lutterodt
+"""
 
 import json
 from datetime import datetime   

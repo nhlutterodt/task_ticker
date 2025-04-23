@@ -1,7 +1,26 @@
-'''
-main.py - Task Ticker Entry Point
-Author: Neils Haldane-Lutterodt
-'''
+"""
+Task Ticker Main Module
+This module serves as the entry point for the Task Ticker application. It initializes the application, sets up logging, and ensures the logs directory exists.
+
+Classes:
+    None
+
+Functions:
+    None
+
+Constants:
+    None
+
+Dependencies:
+    - tkinter: For creating the graphical user interface.
+    - ui.app: Provides the TaskTickerApp class for the main application.
+    - logging: For logging application events.
+    - time: For measuring application uptime.
+    - os: For file system operations.
+
+Author:
+    Neils Haldane-Lutterodt
+"""
 
 import tkinter as tk
 from ui.app import TaskTickerApp

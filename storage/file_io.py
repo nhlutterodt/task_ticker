@@ -1,7 +1,10 @@
 """
-============================================================
-Author:
-    Neils Haldane-Lutterodt
+File I/O Module for Tasks and Notes Management
+This module provides functionality for managing tasks and notes, including saving and loading data to/from JSON files, ensuring the data directory structure, creating backups, and recovering from file corruption or missing files.
+
+Classes:
+    None
+
 Functions:
     ensure_data_dir():
         Ensures the existence of the data directory.
@@ -10,12 +13,12 @@ Functions:
     load_notes() -> List[Note]:
         Loads notes from a JSON file. Returns an empty list if the file is missing or corrupt.
     load_tasks() -> List[Task]:
-        Loads tasks from a JSON file. Links tasks to their associated notes if applicable.
-        Returns an empty list if the file is missing or corrupt.
+        Loads tasks from a JSON file. Links tasks to their associated notes if applicable. Returns an empty list if the file is missing or corrupt.
     backup_exists() -> bool:
         Checks if a backup file exists.
     recover_from_backup() -> List[Task]:
         Recovers tasks from a backup file if available. Returns the loaded list or an empty list.
+
 Constants:
     DATA_DIR:
         The directory where data files are stored.
@@ -25,14 +28,19 @@ Constants:
         The path to the backup JSON file for tasks.
     NOTES_FILE:
         The path to the notes JSON file.
-storage/file_io.py - File I/O for Tasks and Notes Management
-Author: Neils Haldane-Lutterodt
-Description:
-    This module provides functionality for managing tasks and notes, including:
-    - Saving and loading tasks and notes to/from JSON files.
-    - Ensuring data directory structure.
-    - Creating backups for task files and recovering from them.
-    - Handling file corruption or missing files gracefully.
+
+Dependencies:
+    - os: For file and directory operations.
+    - json: For reading and writing JSON files.
+    - shutil: For file backup and recovery operations.
+    - logging: For logging errors and warnings.
+    - typing: For type annotations.
+    - models.task: Provides the Task class for task management.
+    - models.note: Provides the Note class for note management.
+    - logic.note_manager: Provides the get_note_by_id function for linking notes to tasks.
+
+Author:
+    Neils Haldane-Lutterodt
 """
 
 import os

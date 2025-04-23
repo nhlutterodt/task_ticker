@@ -1,7 +1,36 @@
-'''
-storage/settings.py - Robust Settings Manager
-Author: Neils Haldane-Lutterodt
-'''
+"""
+Settings Manager Module
+This module provides functionality for managing application settings, including loading, saving, and validating settings against a predefined schema. It ensures that settings are consistent and automatically fixes missing or invalid entries.
+
+Classes:
+    None
+
+Functions:
+    _default_settings() -> dict:
+        Returns a dictionary of default settings based on the schema.
+    _validate(settings: dict) -> tuple[dict, bool]:
+        Validates the settings against the schema and auto-fixes missing or invalid entries.
+    _validate_nested(settings: dict, schema_defaults: dict) -> tuple[dict, bool]:
+        Validates nested dictionary settings and auto-fixes missing or invalid entries.
+    load_settings() -> dict:
+        Loads settings from a file or returns defaults if the file is missing or invalid.
+    save_settings(settings: dict) -> None:
+        Saves validated settings to a file.
+
+Constants:
+    SETTINGS_FILE:
+        The path to the settings JSON file.
+    SETTINGS_SCHEMA:
+        The schema defining the structure, types, and default values for settings.
+
+Dependencies:
+    - os: For file and directory operations.
+    - json: For reading and writing JSON files.
+    - logging: For logging errors and warnings.
+
+Author:
+    Neils Haldane-Lutterodt
+"""
 
 import os
 import json

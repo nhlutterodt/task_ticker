@@ -1,13 +1,12 @@
 '''
 """
-Task Ticker GUI Application
-This module implements the main graphical user interface (GUI) for the Task Ticker application. 
-It provides functionality for managing tasks, including adding, editing, filtering, sorting, 
-and performing batch operations. The application supports features such as strict mode, 
-recurrence, dependency validation, and undo/redo functionality.
+Task Ticker GUI Application Module
+This module implements the main graphical user interface (GUI) for the Task Ticker application. It provides functionality for managing tasks, including adding, editing, filtering, sorting, and performing batch operations. The application supports features such as strict mode, recurrence, dependency validation, and undo/redo functionality.
+
 Classes:
     TaskTickerApp:
         The main application class that initializes and manages the GUI, task data, and user interactions.
+
 Functions:
     __init__(root):
         Initializes the application, loads tasks and settings, and sets up the GUI components.
@@ -49,11 +48,13 @@ Functions:
         Opens the batch edit tags operation via the controller.
     move_to_group():
         Moves tasks to a specified group using the controller.
+
 Constants:
     ALL_GROUPS_LABEL:
         Label for the "All Groups" option in the group filter dropdown.
     ALL_TAGS_LABEL:
         Label for the "All Tags" option in the tag filter dropdown.
+
 Dependencies:
     - tkinter: Provides the GUI framework.
     - tkcalendar: Used for date entry widgets.
@@ -71,6 +72,7 @@ Dependencies:
     - ui.components.note_editor: Provides the NoteEditor component.
     - ui.notes_editor: Provides the NotesEditor component.
     - notes.manager: Manages notes for tasks.
+
 Author:
     Neils Haldane-Lutterodt
 """

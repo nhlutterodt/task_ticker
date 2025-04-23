@@ -1,3 +1,26 @@
+"""
+Note Model Tests Module
+This module contains unit tests for the `Note` model, ensuring proper initialization and handling of optional fields.
+
+Classes:
+    TestNoteModel:
+        Contains test cases for the `Note` model, including initialization and optional field handling.
+
+Functions:
+    None
+
+Constants:
+    None
+
+Dependencies:
+    - unittest: For creating and running test cases.
+    - datetime: For handling date and time in test data.
+    - models.note: Provides the Note model.
+
+Author:
+    Placeholder Author
+"""
+
 import unittest
 from datetime import datetime
 from models.note import Note

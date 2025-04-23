@@ -1,3 +1,37 @@
+"""
+Notes Viewer Module
+This module defines the `NotesViewer` class, which provides a graphical user interface (GUI) for viewing, editing, and managing notes associated with a specific task. It includes features for creating, editing, deleting, and previewing notes.
+
+Classes:
+    NotesViewer:
+        A Tkinter-based GUI for managing notes linked to a specific task.
+
+Functions:
+    __init__(master, task_id, notes_manager, save_all_callback, *args, **kwargs):
+        Initializes the NotesViewer with the given task ID, notes manager, and save callback.
+    refresh_list():
+        Reloads the list of notes and clears the content preview.
+    get_selected_note() -> Note:
+        Retrieves the currently selected note from the list.
+    new_note():
+        Opens a new note editor for creating a note linked to the task.
+    edit_selected(event=None):
+        Opens the note editor for the currently selected note.
+    delete_selected():
+        Deletes the currently selected note after confirmation.
+
+Constants:
+    None
+
+Dependencies:
+    - tkinter: Provides the GUI framework.
+    - tkinter.scrolledtext: For scrollable text areas.
+    - ui.components.note_editor: Provides the NoteEditor component for editing notes.
+
+Author:
+    Placeholder Author
+"""
+
 import tkinter as tk
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText

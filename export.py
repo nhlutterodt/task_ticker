@@ -1,3 +1,27 @@
+"""
+Export Module
+This module provides functionality to export notes grouped by task metadata in various formats such as JSON and Markdown.
+
+Classes:
+    None
+
+Functions:
+    export_notes_grouped_by_task(tasks: List[Task], notes: Dict[str, Note], format: str = "json") -> str:
+        Exports notes grouped by task metadata in the specified format.
+
+Constants:
+    None
+
+Dependencies:
+    - json: For JSON serialization.
+    - models.task: Provides the Task model.
+    - models.note: Provides the Note model.
+    - typing: For type annotations.
+
+Author:
+    Placeholder Author
+"""
+
 import json
 from models.task import Task
 from models.note import Note

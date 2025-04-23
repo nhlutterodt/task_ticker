@@ -1,38 +1,40 @@
 """
-TaskController Module
-=====================
-This module defines the `TaskController` class, which serves as the controller for managing task-related operations 
-in a Tkinter-based task management application. It provides methods for batch operations, task filtering, tag editing, 
-and group management, while integrating undo/redo functionality and validation mechanisms.
+Task Controller Module
+This module defines the `TaskController` class, which serves as the controller for managing task-related operations in a Tkinter-based task management application. It provides methods for batch operations, task filtering, tag editing, and group management, while integrating undo/redo functionality and validation mechanisms.
+
 Classes:
---------
-- TaskController: Handles user interactions and task operations, including batch updates, filtering, and group changes.
-Methods:
---------
-- __init__(app):
-    Initializes the TaskController with a reference to the main application instance.
-- get_selected_tasks():
-    Retrieves the currently selected tasks from the task listbox.
-- batch_mark_done():
-    Marks selected tasks as done, with validation for batch conflicts and undo/redo support.
-- clear_by_filter():
-    Deletes tasks matching the current filter criteria, with confirmation prompts and undo/redo support.
-- batch_edit_tags():
-    Adds a specified tag to all selected tasks, with undo/redo support.
-- move_to_group():
-    Moves selected tasks to a specified group, with validation for task creation and batch conflicts, 
-    and undo/redo support.
-- add_note_to_task(task_id, note):
-    Adds a note to the specified task.
+    TaskController:
+        Handles user interactions and task operations, including batch updates, filtering, and group changes.
+
+Functions:
+    __init__(app):
+        Initializes the TaskController with a reference to the main application instance.
+    get_selected_tasks() -> List[Task]:
+        Retrieves the currently selected tasks from the task listbox.
+    batch_mark_done():
+        Marks selected tasks as done, with validation for batch conflicts and undo/redo support.
+    clear_by_filter():
+        Deletes tasks matching the current filter criteria, with confirmation prompts and undo/redo support.
+    batch_edit_tags():
+        Adds a specified tag to all selected tasks, with undo/redo support.
+    move_to_group():
+        Moves selected tasks to a specified group, with validation for task creation and batch conflicts, and undo/redo support.
+    add_note_to_task(task_id: str, note: Note):
+        Adds a note to the specified task.
+    save_note_for_task(note: Note):
+        Saves or updates a note via the NotesManager, links it to the task, and refreshes the UI.
+
+Constants:
+    None
+
 Dependencies:
--------------
-- tkinter: Used for UI components like message boxes and dialogs.
-- logic.operations: Provides task-related operations such as toggling status and filtering tasks.
-- logic.validation: Provides validation functions for task creation and batch conflict detection.
-Usage:
-------
-This class is intended to be used as part of a larger Tkinter-based application. It interacts with the application's 
-task list, task lookup, and undo manager to provide a seamless user experience for managing tasks.
+    - tkinter: Used for UI components like message boxes and dialogs.
+    - logic.operations: Provides task-related operations such as toggling status and filtering tasks.
+    - logic.validation: Provides validation functions for task creation and batch conflict detection.
+    - models.note: Defines the Note class.
+
+Author:
+    Placeholder Author
 """
 
 import tkinter as tk

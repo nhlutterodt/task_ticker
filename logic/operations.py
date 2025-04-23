@@ -1,15 +1,49 @@
-'''
-logic/operations.py - Core Task Operations
-Author: Neils Haldane-Lutterodt
+"""
+Core Task Operations Module
+This module provides the core logic for managing tasks, including toggling task statuses, handling recurring tasks, filtering and sorting tasks, and validating dependencies.
 
-This module provides the core logic for managing tasks, including:
-- Toggling task statuses with dependency and subtask validation.
-- Handling recurring tasks with support for shallow and deep cloning.
-- Filtering and sorting tasks based on various criteria.
-- Validating task dependencies to ensure logical due dates.
-- Providing recurrence presets for task scheduling.
+Classes:
+    None
 
-'''
+Functions:
+    toggle_status(task: Task, task_lookup: Dict[str, Task]) -> Optional[Task]:
+        Toggles the status of a task and handles recurring tasks.
+    complete_task(task: Task, task_lookup: Dict[str, Task]) -> Task:
+        Marks a task as completed and generates a summary note.
+    is_recurring(task: Task) -> bool:
+        Checks if a task is recurring.
+    clone_recurring_task(task: Task, task_lookup: Dict[str, Task]) -> Task:
+        Clones a recurring task based on its recurrence settings.
+    compute_next_due_date(current_due: str, frequency: str, interval: int) -> str:
+        Computes the next due date for a recurring task.
+    shallow_clone(task: Task, new_due: str) -> Task:
+        Creates a shallow copy of a task.
+    recursive_deep_clone(original: Task, lookup: Dict[str, Task], new_due: str, id_map: Dict[str, str]) -> Task:
+        Recursively clones a task and its subtasks.
+    filter_tasks(tasks: List[Task], status: str = "All", group: str = "All Groups") -> List[Task]:
+        Filters tasks based on status and group.
+    sort_tasks(tasks: List[Task], key: str = "due_date") -> List[Task]:
+        Sorts tasks based on a specified key.
+    validate_dependency(child: Task, parent: Task) -> bool:
+        Validates the dependency between two tasks.
+    create_task_lookup(tasks: List[Task]) -> Dict[str, Task]:
+        Creates a lookup dictionary for tasks.
+
+Constants:
+    recurrence_structure:
+        A dictionary defining recurrence presets for task scheduling.
+
+Dependencies:
+    - typing: For type annotations.
+    - datetime: For handling timestamps and date calculations.
+    - uuid: For generating unique task IDs.
+    - copy: For deep copying task objects.
+    - models.task: Provides the Task model.
+    - notes.manager: Provides the NotesManager class for managing notes.
+
+Author:
+    Neils Haldane-Lutterodt
+"""
 
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta

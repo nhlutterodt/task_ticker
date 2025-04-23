@@ -1,3 +1,37 @@
+"""
+Notes Editor Module
+This module defines the `NotesEditor` class, which provides a graphical user interface (GUI) for editing notes. It includes features such as markdown preview, template application, and dirty tracking to ensure unsaved changes are handled appropriately.
+
+Classes:
+    NotesEditor:
+        A Tkinter-based GUI for editing notes with support for templates, markdown preview, and validation.
+
+Functions:
+    __init__(master, note, save_callback, templates: list[NoteTemplate] = None, *args, **kwargs):
+        Initializes the NotesEditor with the given note, save callback, and optional templates.
+    apply_template(template_name):
+        Applies a selected template to the note content.
+    save_note():
+        Saves the note using the provided save callback and updates the original values.
+    toggle_preview():
+        Toggles between the markdown preview and the content editor.
+    on_close():
+        Handles the close event, prompting the user to save unsaved changes.
+
+Constants:
+    None
+
+Dependencies:
+    - tkinter: Provides the GUI framework.
+    - tkinter.scrolledtext: For scrollable text areas.
+    - models.note_template: Defines the NoteTemplate class for applying templates.
+    - markdown: Converts markdown content to HTML-like text for preview.
+    - ui.components.note_dirty_tracker: Tracks changes to note fields.
+
+Author:
+    Placeholder Author
+"""
+
 import tkinter as tk
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText

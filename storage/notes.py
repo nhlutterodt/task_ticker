@@ -1,3 +1,37 @@
+"""
+Notes Storage Module
+This module provides functionality for managing notes stored in a JSON file. It includes methods for loading all notes, saving notes, and retrieving notes associated with specific tasks.
+
+Classes:
+    None
+
+Functions:
+    ensure_data_dir():
+        Ensures the existence of the data directory for storing notes.
+    load_notes() -> List[Note]:
+        Loads all notes from the JSON file. Returns an empty list if the file is missing or corrupt.
+    save_notes(notes: List[Note]) -> None:
+        Saves all notes to the JSON file in JSON format.
+    get_notes_for_task(task_id: str) -> List[Note]:
+        Retrieves all notes linked to a specific task ID.
+
+Constants:
+    DATA_DIR:
+        The directory where the notes JSON file is stored.
+    NOTES_STORE:
+        The path to the notes JSON file.
+
+Dependencies:
+    - os: For file and directory operations.
+    - json: For reading and writing JSON files.
+    - logging: For logging errors and warnings.
+    - typing: For type annotations.
+    - models.note: Provides the Note class for note management.
+
+Author:
+    Placeholder Author
+"""
+
 import os
 import json
 import logging

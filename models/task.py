@@ -1,52 +1,44 @@
-'''
 """
-================================
-This module defines the `Task` and `TaskMeta` classes for managing tasks in the Task Ticker application.
-Classes:
---------
-- TaskMeta:
-    Encapsulates metadata for a task, including:
-    - Group: Categorization of the task.
-    - Due Date: Deadline for the task.
-    - Priority: Importance level (e.g., normal, high).
-    - Status: Current state of the task (e.g., pending, done).
-    - Sequence: Order of the task in a list.
-    - Dependencies: Tasks that must be completed before this one.
-    - Notes: Additional information about the task.
-    - Tags: Labels for categorization.
-    - Recurrence: Rules for repeating tasks.
-    - Parent ID: Identifier for the parent task (if any).
-    - Subtasks: List of IDs for dependent subtasks.
-    - Task ID: Unique identifier for the task.
-    - Created At: Timestamp of task creation.
-- Task:
-    Represents a task with the following features:
-    - Serialization to and from dictionary format.
-    - Dependency checks to determine if a task is blocked.
-    - Status updates and checks (e.g., is_done).
-    - Parent task blocking checks based on subtasks.
-Methods:
---------
-- Task.to_dict():
-    Serializes the `Task` object into a dictionary.
-- Task.from_dict(data: dict):
-    Creates a `Task` object from a dictionary.
-- Task.is_done() -> bool:
-    Checks if the task's status is marked as "done".
-- Task.is_blocked(task_lookup: dict) -> bool:
-    Determines if the task is blocked by an incomplete dependency.
-- Task.is_parent_blocked(task_lookup: dict) -> bool:
-    Checks if the task is blocked due to any incomplete subtasks.
-- Task.__str__():
-    Returns a string representation of the task, including its sequence, status, and due date.
-"""
-models/task.py - Task Data Model
-Author: Neils Haldane-Lutterodt
+Task Model Module
+This module defines the `Task` and `TaskMeta` classes for managing tasks in the Task Ticker application. It provides functionality for task serialization, dependency checks, status updates, and recurrence handling.
 
-This module defines the Task and TaskMeta classes for managing tasks in the Task Ticker application.
-- TaskMeta: Encapsulates metadata for a task, including priority, status, tags, and recurrence.
-- Task: Represents a task with methods for serialization, dependency checks, and status updates.
-'''
+Classes:
+    TaskMeta:
+        Encapsulates metadata for a task, including group, due date, priority, status, sequence, dependencies, notes, tags, recurrence, parent ID, subtasks, task ID, and creation timestamp.
+    Task:
+        Represents a task with methods for serialization, dependency checks, and status updates.
+
+Functions:
+    TaskMeta:
+        None (dataclass with default attributes).
+    Task.to_dict() -> dict:
+        Serializes the `Task` object into a dictionary.
+    Task.from_dict(data: dict) -> Task:
+        Creates a `Task` object from a dictionary.
+    Task.is_done() -> bool:
+        Checks if the task's status is marked as "done".
+    Task.is_blocked(task_lookup: dict) -> bool:
+        Determines if the task is blocked by an incomplete dependency.
+    Task.is_parent_blocked(task_lookup: dict) -> bool:
+        Checks if the task is blocked due to any incomplete subtasks.
+    Task.link_note(note: Note):
+        Links a note to the task and updates the note's task ID.
+    Task.__str__() -> str:
+        Returns a string representation of the task, including its sequence, status, and due date.
+
+Constants:
+    None
+
+Dependencies:
+    - uuid: For generating unique task IDs.
+    - datetime: For handling timestamps.
+    - typing: For type annotations.
+    - dataclasses: For defining the TaskMeta dataclass.
+    - models.note: Provides the Note class for linking notes to tasks.
+
+Author:
+    Neils Haldane-Lutterodt
+"""
 
 import uuid
 from datetime import datetime

@@ -1,3 +1,27 @@
+"""
+Utility Tests Module
+This module contains unit tests for utility functions related to notes, including parsing links, comparing notes, and exporting notes in various formats.
+
+Classes:
+    TestUtils:
+        Contains test cases for utility functions like parse_links, diff_notes, and export_notes.
+
+Functions:
+    None
+
+Constants:
+    None
+
+Dependencies:
+    - unittest: For creating and running test cases.
+    - datetime: For handling date and time in test data.
+    - notes.utils: Provides utility functions for notes.
+    - models.note: Provides the Note model.
+
+Author:
+    Placeholder Author
+"""
+
 import unittest
 from datetime import datetime
 from notes.utils import parse_links, diff_notes, export_notes
