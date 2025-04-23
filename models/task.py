@@ -50,7 +50,7 @@ This module defines the Task and TaskMeta classes for managing tasks in the Task
 
 import uuid
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 from dataclasses import dataclass, field
 from models.note import Note
 
@@ -63,7 +63,7 @@ class TaskMeta:
     status: str = "pending"
     sequence: int = 1
     depends_on: Optional[str] = None
-    notes: str = ""
+    notes: Union[str, Note] = ""
     tags: List[str] = field(default_factory=list)
     recurrence: Dict = field(default_factory=lambda: {
         "frequency": "none", "interval": 1, "count": None, "end_date": None, "clone_type": "shallow"
@@ -86,7 +86,11 @@ class Task:
         self.status     = m.status.lower()
         self.sequence   = m.sequence
         self.depends_on = m.depends_on
-        self.notes      = m.notes.strip()
+        # Support both raw string notes and Note instances
+        if isinstance(m.notes, Note):
+            self.notes = m.notes
+        else:
+            self.notes = m.notes.strip()
         self.note_id    = None  # New field for decoupling notes
         self.tags       = m.tags
         self.recurrence = m.recurrence
@@ -94,6 +98,9 @@ class Task:
         self.subtasks   = m.subtasks
 
     def to_dict(self) -> dict:
+        # Serialize task; include raw notes content or placeholder and correct note_id
+        notes_value = self.notes.content if isinstance(self.notes, Note) else self.notes
+        note_id_value = self.notes.id if isinstance(self.notes, Note) else self.note_id
         return {
             "id": self.id,
             "task": self.task,
@@ -104,8 +111,8 @@ class Task:
             "status": self.status,
             "sequence": self.sequence,
             "depends_on": self.depends_on,
-            "notes": self.notes,
-            "note_id": self.note_id,  # Include note_id in serialization
+            "notes": notes_value,
+            "note_id": note_id_value,
             "tags": self.tags,
             "recurrence": self.recurrence,
             "parent_id": self.parent_id,
@@ -121,7 +128,7 @@ class Task:
             status=data.get("status", "pending"),
             sequence=data.get("sequence", 1),
             depends_on=data.get("depends_on"),
-            notes=data.get("notes", ""),
+            notes=data.get("notes", ""),  # May be raw string initially
             tags=data.get("tags", []),
             recurrence=data.get("recurrence"),
             parent_id=data.get("parent_id"),

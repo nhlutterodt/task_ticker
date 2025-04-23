@@ -42,6 +42,7 @@ import logging
 from typing import List
 from models.task import Task
 from models.note import Note
+from logic.note_manager import get_note_by_id
 
 DATA_DIR = "data"
 TASKS_FILE = os.path.join(DATA_DIR, "tasks.json")
@@ -100,15 +101,19 @@ def load_tasks() -> List[Task]:
     if not os.path.exists(TASKS_FILE):
         return []
 
-    notes = {note.id: note for note in load_notes()}  # Load notes into a dictionary
-
+    # Load standalone notes for linking
+    # Note: load standalone Note records for existing tasks
+    # load_notes from storage.file_io.load_notes isn't for Note records; use note_manager
+    # Use get_note_by_id for linking
     try:
         with open(TASKS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
         tasks = [Task.from_dict(item) for item in data]
         for task in tasks:
-            if task.note_id and task.note_id in notes:
-                task.notes = notes[task.note_id].content  # Fetch note content by note_id
+            if task.note_id:
+                note = get_note_by_id(task.note_id)
+                if note:
+                    task.notes = note
         return tasks
     except Exception as e:
         logging.warning(f"[Load Error] Failed to read or parse tasks file: {e}")

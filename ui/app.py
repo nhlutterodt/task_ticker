@@ -93,6 +93,9 @@ from storage.file_io import load_tasks, save_tasks
 from storage.settings import load_settings, save_settings
 from ui.controller import TaskController
 from ui.undo import UndoManager
+from models.note import Note
+from logic.note_manager import create_note, update_note
+from ui.components.note_editor import NoteEditor
 
 ALL_GROUPS_LABEL = "All Groups"
 ALL_TAGS_LABEL = "All Tags"
@@ -311,31 +314,45 @@ class TaskTickerApp:
             pass
 
     def open_notes_editor(self, task):
-        notes_window = tk.Toplevel(self.root)
-        notes_window.title("Notes")
-        notes_window.geometry("500x300")
-        notes_window.resizable(False, False)
+        # Prepare Note instance: convert raw notes if needed
+        if isinstance(task.notes, Note):
+            note = task.notes
+        else:
+            note = create_note(task.notes)
+            task.notes = note
+            task.note_id = note.id
 
-        text_area = tk.Text(notes_window, wrap=tk.WORD)
-        text_area.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
-        text_area.insert(tk.END, task.notes)
-
-        def save_notes_and_close():
-            # Capture old and new notes for undo/redo
-            old_notes = task.notes
-            new_notes = text_area.get("1.0", tk.END).strip()
+        def save_callback(updated_note):
+            # Persist changes to storage via note_manager
+            try:
+                persisted = update_note(
+                    note_id=updated_note.id,
+                    content=updated_note.content,
+                    tags=updated_note.tags,
+                    label=updated_note.label
+                )
+            except Exception as e:
+                messagebox.showerror("Note Save Failed", str(e))
+                return
+            # Register undo/redo actions for note content changes
+            old_content = note.content
+            new_content = persisted.content
             def undo_action():
-                task.notes = old_notes
+                update_note(persisted.id, content=old_content)
+                note.content = old_content
                 self.save_all()
             def redo_action():
-                task.notes = new_notes
+                update_note(persisted.id, content=new_content)
+                note.content = new_content
                 self.save_all()
             self.undo_manager.register(undo_action, redo_action)
-            task.notes = new_notes
+            # Update task's note reference and persist tasks
+            task.notes = persisted
+            task.note_id = persisted.id
             self.save_all()
-            notes_window.destroy()
 
-        tk.Button(notes_window, text="Save Notes", command=save_notes_and_close).pack(pady=5)
+        # Launch reusable NoteEditor component
+        NoteEditor(self.root, note, save_callback)
 
     def toggle_selected_task(self):
         try:

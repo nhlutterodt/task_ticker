@@ -1,4 +1,3 @@
-
 """
 Dataclass:
     Note:
@@ -31,3 +30,26 @@ class Note:
     tags: List[str] = field(default_factory=list)
     label: Optional[str] = None
     history: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "content": self.content,
+            "created_at": self.created_at.isoformat() if isinstance(self.created_at, datetime) else self.created_at,
+            "updated_at": self.updated_at.isoformat() if isinstance(self.updated_at, datetime) else self.updated_at,
+            "tags": self.tags,
+            "label": self.label,
+            "history": self.history
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Note":
+        return cls(
+            id=data["id"],
+            content=data["content"],
+            created_at=datetime.fromisoformat(data["created_at"]) if isinstance(data.get("created_at"), str) else data.get("created_at"),
+            updated_at=datetime.fromisoformat(data["updated_at"]) if isinstance(data.get("updated_at"), str) else data.get("updated_at"),
+            tags=data.get("tags", []),
+            label=data.get("label"),
+            history=data.get("history", [])
+        )
