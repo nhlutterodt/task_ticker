@@ -1,0 +1,30 @@
+{
+    "file": "ui\\components\\note_editor.py",
+    "title": "",
+    "description": "",
+    "classes": [
+        "NoteEditor"
+    ],
+    "functions": [
+        "edit_note"
+    ],
+    "notes": [
+        "Track original values",
+        "Label field",
+        "Tags field",
+        "Content text area",
+        "Buttons",
+        "Disable save until changes and fields valid",
+        "Bind events for dirty tracking and validation",
+        "Handle close with unsaved changes",
+        "Keyboard shortcuts",
+        "Focus label entry",
+        "Yes",
+        "No",
+        "Cancel does nothing",
+        "Validate fields",
+        "Gather tags",
+        "Apply updates to note",
+        "Persist via callback"
+    ]
+}

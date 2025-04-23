@@ -1,0 +1,25 @@
+{
+    "file": "ui\\app.py",
+    "title": "\"\"\"",
+    "description": "Task Ticker GUI Application Module\nThis module implements the main graphical user interface (GUI) for the Task Ticker application. It provides functionality for managing tasks, including adding, editing, filtering, sorting, and performing batch operations. The application supports features such as strict mode, recurrence, dependency validation, and undo/redo functionality.\n\nClasses:\n    TaskTickerApp:\n        The main application class that initializes and manages the GUI, task data, and user interactions.\n\nFunctions:\n    __init__(root):\n        Initializes the application, loads tasks and settings, and sets up the GUI components.\n    build_ui():\n        Constructs the graphical user interface, including menus, controls, and task list display.\n    toggle_strict_mode():\n        Toggles the strict mode setting and saves the updated configuration.\n    add_task():\n        Adds a new task to the task list after validating input and dependencies.\n    render_task_list():\n        Updates the task list display based on the current filters and sorting options.\n    edit_notes_for_selected(event):\n        Opens a notes editor for the selected task in the task list.\n    open_notes_editor(task):\n        Displays a separate window for editing the notes of a specific task.\n    toggle_selected_task():\n        Toggles the completion status of the selected task and handles undo/redo registration.\n    delete_task():\n        Deletes the selected task from the task list and handles undo/redo registration.\n    perform_undo():\n        Performs an undo operation for the last action.\n    perform_redo():\n        Performs a redo operation for the last undone action.\n    update_group_filter():\n        Updates the group filter dropdown menu with available groups.\n    update_tag_filter():\n        Updates the tag filter dropdown menu with available tags.\n    update_dependency_dropdown():\n        Updates the dependency dropdown menu with available tasks.\n    update_all_filters():\n        Updates all filter dropdown menus (group, tag, dependency).\n    save_all():\n        Saves the current tasks and settings to persistent storage.\n    mark_all_done():\n        Marks all tasks as done using the controller's batch operation.\n    clear_by_filter():\n        Clears tasks based on the current filter using the controller's batch operation.\n    batch_edit_tags():\n        Opens the batch edit tags operation via the controller.\n    move_to_group():\n        Moves tasks to a specified group using the controller.\n\nConstants:\n    ALL_GROUPS_LABEL:\n        Label for the \"All Groups\" option in the group filter dropdown.\n    ALL_TAGS_LABEL:\n        Label for the \"All Tags\" option in the tag filter dropdown.\n\nDependencies:\n    - tkinter: Provides the GUI framework.\n    - tkcalendar: Used for date entry widgets.\n    - uuid: Generates unique identifiers for tasks.\n    - datetime: Handles date and time operations.\n    - models.task: Defines the Task and TaskMeta classes.\n    - logic.operations: Provides task-related operations such as filtering, sorting, and validation.\n    - logic.validation: Validates task creation rules.\n    - storage.file_io: Handles loading and saving tasks to persistent storage.\n    - storage.settings: Manages application settings.\n    - ui.controller: Provides batch operation functionality.\n    - ui.undo: Implements undo/redo functionality.\n    - models.note: Defines the Note class.\n    - logic.note_manager: Manages note creation and updates.\n    - ui.components.note_editor: Provides the NoteEditor component.\n    - ui.notes_editor: Provides the NotesEditor component.\n    - notes.manager: Manages notes for tasks.\n\nAuthor:\n    Neils Haldane-Lutterodt\n\"\"\"\nui/app.py - Task Ticker GUI with Strict Mode and Recurrence Support\nAuthor: Neils Haldane-Lutterodt",
+    "classes": [
+        "TaskTickerApp"
+    ],
+    "functions": [],
+    "notes": [
+        "Keyboard shortcuts for notes operations",
+        "Prepare Note instance: convert raw notes if needed",
+        "Persist changes to storage via note_manager",
+        "Register undo/redo actions for note content changes",
+        "Update task's note reference and persist tasks",
+        "Launch reusable NoteEditor component",
+        "Open the aggregated NotesViewer",
+        "Capture pre-toggle state",
+        "Register undo/redo for toggle status",
+        "register undo/redo actions",
+        "perform delete",
+        "Batch operation delegates",
+        "Placeholder for future notes browser implementation",
+        "Open aggregated notes viewer"
+    ]
+}

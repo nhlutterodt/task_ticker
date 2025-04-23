@@ -1,0 +1,12 @@
+{
+    "file": "tests\\test_integration.py",
+    "title": "Integration Tests Module",
+    "description": "This module contains integration tests to validate the interaction between tasks and notes, ensuring proper resolution and data persistence.\n\nClasses:\n    TestIntegration:\n        Contains test cases for task-note relationships and file I/O operations.\n\nFunctions:\n    None\n\nConstants:\n    None\n\nDependencies:\n    - unittest: For creating and running test cases.\n    - datetime: For handling date and time in test data.\n    - models.task: Provides the Task model.\n    - models.note: Provides the Note model.\n    - storage.file_io: Provides save_tasks and load_tasks for file operations.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "TestIntegration"
+    ],
+    "functions": [],
+    "notes": [
+        "Mock saving and loading"
+    ]
+}

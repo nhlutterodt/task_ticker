@@ -1,0 +1,17 @@
+{
+    "file": "storage\\settings.py",
+    "title": "Settings Manager Module",
+    "description": "This module provides functionality for managing application settings, including loading, saving, and validating settings against a predefined schema. It ensures that settings are consistent and automatically fixes missing or invalid entries.\n\nClasses:\n    None\n\nFunctions:\n    _default_settings() -> dict:\n        Returns a dictionary of default settings based on the schema.\n    _validate(settings: dict) -> tuple[dict, bool]:\n        Validates the settings against the schema and auto-fixes missing or invalid entries.\n    _validate_nested(settings: dict, schema_defaults: dict) -> tuple[dict, bool]:\n        Validates nested dictionary settings and auto-fixes missing or invalid entries.\n    load_settings() -> dict:\n        Loads settings from a file or returns defaults if the file is missing or invalid.\n    save_settings(settings: dict) -> None:\n        Saves validated settings to a file.\n\nConstants:\n    SETTINGS_FILE:\n        The path to the settings JSON file.\n    SETTINGS_SCHEMA:\n        The schema defining the structure, types, and default values for settings.\n\nDependencies:\n    - os: For file and directory operations.\n    - json: For reading and writing JSON files.\n    - logging: For logging errors and warnings.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [],
+    "functions": [
+        "_default_settings",
+        "_validate",
+        "_validate_nested",
+        "load_settings",
+        "save_settings"
+    ],
+    "notes": [
+        "\u2705 Central schema for all settings",
+        "Handle nested dictionaries"
+    ]
+}

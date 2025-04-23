@@ -1,0 +1,17 @@
+{
+    "file": "logic\\note_manager.py",
+    "title": "Note Manager Logic Module",
+    "description": "This module provides utility functions for managing notes by delegating operations to the `NotesManager` class. It includes functions for creating, updating, deleting, and retrieving notes.\n\nClasses:\n    None\n\nFunctions:\n    get_all_notes() -> list[Note]:\n        Returns all stored notes.\n    get_note_by_id(note_id: str) -> Note:\n        Retrieves a single note by its ID.\n    create_note(content: str, tags: list = None, label: str = None, task_id: str = None) -> Note:\n        Creates a new note via the NotesManager.\n    update_note(note_id: str, content: str = None, tags: list = None, label: str = None) -> Note:\n        Updates an existing note via the NotesManager.\n    delete_note(note_id: str) -> bool:\n        Deletes a note by its ID via the NotesManager.\n    delete_unlinked(linked_ids: set[str]) -> dict[str, Note]:\n        Deletes notes not linked to any task via the NotesManager.\n\nConstants:\n    None\n\nDependencies:\n    - notes.manager: Provides the NotesManager class for managing notes.\n\nAuthor:\n    Placeholder Author",
+    "classes": [],
+    "functions": [
+        "get_all_notes",
+        "get_note_by_id",
+        "create_note",
+        "update_note",
+        "delete_note",
+        "delete_unlinked"
+    ],
+    "notes": [
+        "Delegate note operations to centralized manager"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "file": "ui\\components\\note_dirty_tracker.py",
+    "title": "",
+    "description": "",
+    "classes": [
+        "NoteDirtyTracker"
+    ],
+    "functions": [],
+    "notes": [
+        "Disable save initially",
+        "Bind modified event",
+        "Reset Tk's modified flag"
+    ]
+}

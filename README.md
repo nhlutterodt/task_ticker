@@ -54,6 +54,47 @@ Task Ticker is a robust task management application designed to help users organ
 - **File**: `ui/controller.py`
   - Handles batch operations and task-related interactions, such as editing tags or moving tasks to groups.
 
+## 📘 Module Overview
+
+### `archive_v9.py`
+- [`archive_v9.py`](archive_v9.py): *Task Ticker v9 - Task Dependencies and Sequencing*  
+  **Classes**: `TaskTickerApp`
+
+### `export.py`
+- [`export.py`](export.py): *Export Module*  
+  This module provides functionality to export notes grouped by task metadata in various formats such as JSON and Markdown.  
+  **Functions**: `export_notes_grouped_by_task`
+
+### `main.py`
+- [`main.py`](main.py): *Task Ticker Main Module*  
+  This module serves as the entry point for the Task Ticker application. It initializes the application, sets up logging, and ensures the logs directory exists.
+
+### `models/`
+- [`models/note.py`](models/note.py): *Note Model Module*  
+  Defines the `Note` dataclass, representing a note entity with attributes such as content, timestamps, tags, and history.  
+  **Classes**: `Note`
+
+- [`models/note_history.py`](models/note_history.py): *Note History Module*  
+  Manages the version history of notes, including adding versions, retrieving history, and computing differences.  
+  **Classes**: `NoteHistory`
+
+- [`models/note_template.py`](models/note_template.py): *Note Template Module*  
+  Represents a template for notes with attributes for name, content, and tags.  
+  **Classes**: `NoteTemplate`
+
+- [`models/shared_tags.py`](models/shared_tags.py): *Shared Tags Module*  
+  Manages a global set of tags shared across the application.  
+  **Classes**: `SharedTags`
+
+- [`models/task.py`](models/task.py): *Task Model Module*  
+  Defines the `Task` and `TaskMeta` classes for managing tasks, including serialization, dependency checks, and recurrence handling.  
+  **Classes**: `TaskMeta`, `Task`
+
+### `storage/`
+- [`storage/file_io.py`](storage/file_io.py): *File I/O Module for Tasks and Notes Management*  
+  Provides functionality for managing tasks and notes, including saving and loading data to/from JSON files, ensuring the data directory structure, creating backups, and recovering from file corruption.  
+  **Functions**: `ensure_data_dir`, `save_tasks`, `load_notes`, `load_tasks`, `backup_exists`, `recover_from_backup`
+
 ## How It Works
 
 1. **Task Management**: Users can create tasks with metadata such as due dates, priorities, tags, and dependencies. Tasks can also have associated notes for additional details.

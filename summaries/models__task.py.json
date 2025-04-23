@@ -1,0 +1,17 @@
+{
+    "file": "models\\task.py",
+    "title": "Task Model Module",
+    "description": "This module defines the `Task` and `TaskMeta` classes for managing tasks in the Task Ticker application. It provides functionality for task serialization, dependency checks, status updates, and recurrence handling.\n\nClasses:\n    TaskMeta:\n        Encapsulates metadata for a task, including group, due date, priority, status, sequence, dependencies, notes, tags, recurrence, parent ID, subtasks, task ID, and creation timestamp.\n    Task:\n        Represents a task with methods for serialization, dependency checks, and status updates.\n\nFunctions:\n    TaskMeta:\n        None (dataclass with default attributes).\n    Task.to_dict() -> dict:\n        Serializes the `Task` object into a dictionary.\n    Task.from_dict(data: dict) -> Task:\n        Creates a `Task` object from a dictionary.\n    Task.is_done() -> bool:\n        Checks if the task's status is marked as \"done\".\n    Task.is_blocked(task_lookup: dict) -> bool:\n        Determines if the task is blocked by an incomplete dependency.\n    Task.is_parent_blocked(task_lookup: dict) -> bool:\n        Checks if the task is blocked due to any incomplete subtasks.\n    Task.link_note(note: Note):\n        Links a note to the task and updates the note's task ID.\n    Task.__str__() -> str:\n        Returns a string representation of the task, including its sequence, status, and due date.\n\nConstants:\n    None\n\nDependencies:\n    - uuid: For generating unique task IDs.\n    - datetime: For handling timestamps.\n    - typing: For type annotations.\n    - dataclasses: For defining the TaskMeta dataclass.\n    - models.note: Provides the Note class for linking notes to tasks.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [
+        "TaskMeta",
+        "Task"
+    ],
+    "functions": [],
+    "notes": [
+        "Support both raw string notes and Note instances",
+        "New field for decoupling notes",
+        "Serialize task; include raw notes content or placeholder and correct note_id",
+        "May be raw string initially",
+        "Load note_id if present"
+    ]
+}

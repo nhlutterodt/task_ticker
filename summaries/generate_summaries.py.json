@@ -1,0 +1,28 @@
+{
+    "file": "generate_summaries.py",
+    "title": "",
+    "description": "",
+    "classes": [],
+    "functions": [
+        "extract_metadata",
+        "_read_file",
+        "_extract_docstring",
+        "_extract_classes",
+        "_extract_functions",
+        "_extract_inline_comments",
+        "process_files"
+    ],
+    "notes": [
+        "Ensure the summaries directory exists",
+        "Updated extract_metadata to pass content to _extract_inline_comments",
+        "Pass raw content here",
+        "Updated _extract_inline_comments to use tokenize for extracting # comments",
+        "Updated process_files to support CLI filtering and exclude unnecessary folders",
+        "Exclude unnecessary folders",
+        "Deterministic order helps with debugging and consistent summaries",
+        "Skip files not in the specified folder if --only is used",
+        "Encode relative path into the filename to avoid clashes",
+        "Write metadata to a JSON file",
+        "Add verbose logging"
+    ]
+}

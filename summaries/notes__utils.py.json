@@ -1,0 +1,15 @@
+{
+    "file": "notes\\utils.py",
+    "title": "Notes Utilities Module",
+    "description": "This module provides utility functions for handling notes, including parsing links, comparing notes, and exporting notes in various formats. It also includes functionality for computing differences between note versions and fetching notes by task ID.\n\nClasses:\n    None\n\nFunctions:\n    parse_links(content: str) -> Dict[str, List[str]]:\n        Extracts URLs, hashtags, and mentions from the given text content.\n    parse_mentions_hashtags_urls(content: str) -> Dict[str, List[str]]:\n        Extracts URLs, hashtags, and mentions from the given text content.\n    diff_notes(old: Note, new: Note) -> Dict[str, List[str]]:\n        Compares two notes and returns the differences in their content, tags, labels, and updated_at timestamp.\n    export_notes(notes: Dict[str, Note], format: str = \"json\") -> str:\n        Exports a dictionary of notes to the specified format, either JSON or Markdown.\n    get_notes_by_task_id(notes: dict[str, Note], task_id: str) -> list[Note]:\n        Fetches notes associated with a specific task ID.\n    diff_note_versions(old_content: str, new_content: str) -> dict:\n        Computes the differences between two versions of note content.\n\nConstants:\n    None\n\nDependencies:\n    - json: For JSON serialization.\n    - datetime: For handling timestamps.\n    - re: For regular expression operations.\n    - typing: For type annotations.\n    - models.note: Provides the Note model.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [],
+    "functions": [
+        "parse_links",
+        "parse_mentions_hashtags_urls",
+        "diff_notes",
+        "export_notes",
+        "get_notes_by_task_id",
+        "diff_note_versions"
+    ],
+    "notes": []
+}

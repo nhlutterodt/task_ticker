@@ -1,0 +1,12 @@
+{
+    "file": "ui\\undo.py",
+    "title": "Undo Manager Module",
+    "description": "This module provides the `UndoManager` class, which implements a stack-based mechanism to handle undo and redo functionality. It allows registering actions with corresponding undo and redo operations and provides methods to perform undo and redo actions while maintaining a configurable stack limit.\n\nClasses:\n    UndoManager:\n        Manages undo and redo stacks with a configurable limit.\n\nFunctions:\n    __init__(limit=20):\n        Initializes the UndoManager with a specified stack limit.\n    register(undo_action, redo_action):\n        Registers an undo and redo action pair, maintaining the stack limit.\n    can_undo() -> bool:\n        Checks if there are actions available to undo.\n    can_redo() -> bool:\n        Checks if there are actions available to redo.\n    undo() -> bool:\n        Performs the last registered undo action and moves it to the redo stack.\n    redo() -> bool:\n        Reapplies the last undone action and moves it back to the undo stack.\n\nConstants:\n    None\n\nDependencies:\n    None\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "UndoManager"
+    ],
+    "functions": [],
+    "notes": [
+        "Push a new action and clear redo stack"
+    ]
+}

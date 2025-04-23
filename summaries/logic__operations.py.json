@@ -1,0 +1,35 @@
+{
+    "file": "logic\\operations.py",
+    "title": "Core Task Operations Module",
+    "description": "This module provides the core logic for managing tasks, including toggling task statuses, handling recurring tasks, filtering and sorting tasks, and validating dependencies.\n\nClasses:\n    None\n\nFunctions:\n    toggle_status(task: Task, task_lookup: Dict[str, Task]) -> Optional[Task]:\n        Toggles the status of a task and handles recurring tasks.\n    complete_task(task: Task, task_lookup: Dict[str, Task]) -> Task:\n        Marks a task as completed and generates a summary note.\n    is_recurring(task: Task) -> bool:\n        Checks if a task is recurring.\n    clone_recurring_task(task: Task, task_lookup: Dict[str, Task]) -> Task:\n        Clones a recurring task based on its recurrence settings.\n    compute_next_due_date(current_due: str, frequency: str, interval: int) -> str:\n        Computes the next due date for a recurring task.\n    shallow_clone(task: Task, new_due: str) -> Task:\n        Creates a shallow copy of a task.\n    recursive_deep_clone(original: Task, lookup: Dict[str, Task], new_due: str, id_map: Dict[str, str]) -> Task:\n        Recursively clones a task and its subtasks.\n    filter_tasks(tasks: List[Task], status: str = \"All\", group: str = \"All Groups\") -> List[Task]:\n        Filters tasks based on status and group.\n    sort_tasks(tasks: List[Task], key: str = \"due_date\") -> List[Task]:\n        Sorts tasks based on a specified key.\n    validate_dependency(child: Task, parent: Task) -> bool:\n        Validates the dependency between two tasks.\n    create_task_lookup(tasks: List[Task]) -> Dict[str, Task]:\n        Creates a lookup dictionary for tasks.\n\nConstants:\n    recurrence_structure:\n        A dictionary defining recurrence presets for task scheduling.\n\nDependencies:\n    - typing: For type annotations.\n    - datetime: For handling timestamps and date calculations.\n    - uuid: For generating unique task IDs.\n    - copy: For deep copying task objects.\n    - models.task: Provides the Task model.\n    - notes.manager: Provides the NotesManager class for managing notes.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [],
+    "functions": [
+        "toggle_status",
+        "complete_task",
+        "is_recurring",
+        "clone_recurring_task",
+        "compute_next_due_date",
+        "shallow_clone",
+        "recursive_deep_clone",
+        "filter_tasks",
+        "sort_tasks",
+        "validate_dependency",
+        "create_task_lookup"
+    ],
+    "notes": [
+        "==============================",
+        "Core Task Status Operations",
+        "==============================",
+        "Auto-generate a summary note",
+        "==============================",
+        "Recurring Task Cloning Logic",
+        "==============================",
+        "Handle subtasks",
+        "==============================",
+        "Filtering / Sorting Helpers",
+        "==============================",
+        "==============================",
+        "UI: Recurrence Preset Options",
+        "=============================="
+    ]
+}

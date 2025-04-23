@@ -1,0 +1,23 @@
+{
+    "file": "logic\\validation.py",
+    "title": "Task Validation Logic Module",
+    "description": "This module contains functions and logic to validate tasks and task graphs. It ensures tasks adhere to defined rules, checks for dependency issues, detects cycles, and validates group-based constraints such as unique task names and priority exclusivity.\n\nClasses:\n    None\n\nFunctions:\n    validate_task_creation(task: Task, task_lookup: Dict[str, Task], rules: Optional[Dict] = None) -> dict:\n        Validates a single task against rules during creation.\n    validate_task_graph(tasks: List[Task], rules: Optional[Dict] = None) -> Dict:\n        Validates a collection of tasks for structural and rule-based issues.\n    validate_batch_conflicts(tasks: List[Task]) -> bool:\n        Checks for conflicting high-priority tasks in a batch.\n    validate_note_link(note_id: str, linked_ids: set[str]) -> bool:\n        Validates the integrity of task-note references.\n\nConstants:\n    DEFAULT_RULES:\n        A dictionary of default validation rules.\n\nDependencies:\n    - typing: For type annotations.\n    - datetime: For handling timestamps.\n    - logging: For logging validation issues.\n    - models.task: Provides the Task model.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [],
+    "functions": [
+        "validate_task_creation",
+        "validate_task_graph",
+        "validate_batch_conflicts",
+        "validate_note_link"
+    ],
+    "notes": [
+        "Rule 1: Prevent self-dependency",
+        "Rule 2: Due date must follow dependency",
+        "Rule 3: Task name must be unique within group",
+        "Rule 4: Only one high-priority task per group",
+        "Dependency checks",
+        "Subtask checks",
+        "Rule: Only one high-priority task per group",
+        "Rule: Unique task names within group",
+        "Build final report"
+    ]
+}

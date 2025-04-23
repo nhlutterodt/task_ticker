@@ -1,0 +1,10 @@
+{
+    "file": "models\\note_template.py",
+    "title": "Note Template Module",
+    "description": "This module defines the `NoteTemplate` class, which represents a template for notes. It includes attributes for the template's name, content, and associated tags, as well as methods for serialization and deserialization.\n\nClasses:\n    NoteTemplate:\n        Represents a note template with attributes for name, content, and tags.\n\nFunctions:\n    to_dict() -> dict:\n        Converts the NoteTemplate instance into a dictionary for serialization.\n    from_dict(data: dict) -> NoteTemplate:\n        Creates a NoteTemplate instance from a dictionary.\n\nConstants:\n    None\n\nDependencies:\n    - typing: For type annotations.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "NoteTemplate"
+    ],
+    "functions": [],
+    "notes": []
+}

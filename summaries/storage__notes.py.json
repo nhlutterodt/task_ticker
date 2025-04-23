@@ -1,0 +1,13 @@
+{
+    "file": "storage\\notes.py",
+    "title": "Notes Storage Module",
+    "description": "This module provides functionality for managing notes stored in a JSON file. It includes methods for loading all notes, saving notes, and retrieving notes associated with specific tasks.\n\nClasses:\n    None\n\nFunctions:\n    ensure_data_dir():\n        Ensures the existence of the data directory for storing notes.\n    load_notes() -> List[Note]:\n        Loads all notes from the JSON file. Returns an empty list if the file is missing or corrupt.\n    save_notes(notes: List[Note]) -> None:\n        Saves all notes to the JSON file in JSON format.\n    get_notes_for_task(task_id: str) -> List[Note]:\n        Retrieves all notes linked to a specific task ID.\n\nConstants:\n    DATA_DIR:\n        The directory where the notes JSON file is stored.\n    NOTES_STORE:\n        The path to the notes JSON file.\n\nDependencies:\n    - os: For file and directory operations.\n    - json: For reading and writing JSON files.\n    - logging: For logging errors and warnings.\n    - typing: For type annotations.\n    - models.note: Provides the Note class for note management.\n\nAuthor:\n    Placeholder Author",
+    "classes": [],
+    "functions": [
+        "ensure_data_dir",
+        "load_notes",
+        "save_notes",
+        "get_notes_for_task"
+    ],
+    "notes": []
+}

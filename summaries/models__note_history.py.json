@@ -1,0 +1,10 @@
+{
+    "file": "models\\note_history.py",
+    "title": "Note History Module",
+    "description": "This module defines the `NoteHistory` class, which manages the version history of notes. It provides methods for adding new versions, retrieving the history of a specific note, and computing differences between two versions of note content.\n\nClasses:\n    NoteHistory:\n        Manages the version history of notes, including adding versions, retrieving history, and computing differences.\n\nFunctions:\n    __init__():\n        Initializes the NoteHistory instance with an empty history list.\n    add_version(note_id: str, content: str):\n        Adds a new version of a note to the history with a timestamp.\n    get_history(note_id: str) -> List[Dict]:\n        Retrieves the version history for a specific note ID.\n    diff_versions(old_content: str, new_content: str) -> Dict:\n        Computes the differences between two versions of note content.\n\nConstants:\n    None\n\nDependencies:\n    - typing: For type annotations.\n    - datetime: For handling timestamps.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "NoteHistory"
+    ],
+    "functions": [],
+    "notes": []
+}

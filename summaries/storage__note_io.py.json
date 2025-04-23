@@ -1,0 +1,13 @@
+{
+    "file": "storage\\note_io.py",
+    "title": "Note I/O Module",
+    "description": "This module provides functionality for managing notes stored in a JSON file. It includes methods for loading notes, saving notes, and retrieving notes associated with specific tasks.\n\nClasses:\n    None\n\nFunctions:\n    ensure_data_dir():\n        Ensures the existence of the data directory for storing notes.\n    load_notes() -> dict[str, Note]:\n        Loads notes from a JSON file as a dictionary of Note instances keyed by note ID.\n    save_notes(notes: dict[str, Note]) -> None:\n        Saves notes to a JSON file as a dictionary keyed by note ID.\n    get_notes_for_task(task_id: str) -> list[Note]:\n        Retrieves all notes associated with a specific task ID.\n\nConstants:\n    DATA_DIR:\n        The directory where the notes JSON file is stored.\n    NOTES_FILE:\n        The path to the notes JSON file.\n\nDependencies:\n    - os: For file and directory operations.\n    - json: For reading and writing JSON files.\n    - logging: For logging errors and warnings.\n    - models.note: Provides the Note class for note management.\n\nAuthor:\n    Placeholder Author",
+    "classes": [],
+    "functions": [
+        "ensure_data_dir",
+        "load_notes",
+        "save_notes",
+        "get_notes_for_task"
+    ],
+    "notes": []
+}

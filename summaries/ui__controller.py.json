@@ -1,0 +1,24 @@
+{
+    "file": "ui\\controller.py",
+    "title": "Task Controller Module",
+    "description": "This module defines the `TaskController` class, which serves as the controller for managing task-related operations in a Tkinter-based task management application. It provides methods for batch operations, task filtering, tag editing, and group management, while integrating undo/redo functionality and validation mechanisms.\n\nClasses:\n    TaskController:\n        Handles user interactions and task operations, including batch updates, filtering, and group changes.\n\nFunctions:\n    __init__(app):\n        Initializes the TaskController with a reference to the main application instance.\n    get_selected_tasks() -> List[Task]:\n        Retrieves the currently selected tasks from the task listbox.\n    batch_mark_done():\n        Marks selected tasks as done, with validation for batch conflicts and undo/redo support.\n    clear_by_filter():\n        Deletes tasks matching the current filter criteria, with confirmation prompts and undo/redo support.\n    batch_edit_tags():\n        Adds a specified tag to all selected tasks, with undo/redo support.\n    move_to_group():\n        Moves selected tasks to a specified group, with validation for task creation and batch conflicts, and undo/redo support.\n    add_note_to_task(task_id: str, note: Note):\n        Adds a note to the specified task.\n    save_note_for_task(note: Note):\n        Saves or updates a note via the NotesManager, links it to the task, and refreshes the UI.\n\nConstants:\n    None\n\nDependencies:\n    - tkinter: Used for UI components like message boxes and dialogs.\n    - logic.operations: Provides task-related operations such as toggling status and filtering tasks.\n    - logic.validation: Provides validation functions for task creation and batch conflict detection.\n    - models.note: Defines the Note class.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "TaskController"
+    ],
+    "functions": [],
+    "notes": [
+        "Persist the note to storage",
+        "Determine if existing note",
+        "Link the persisted note to the task and update UI",
+        "Pre-validation for batch conflicts",
+        "Capture pre-action state",
+        "Register undo/redo for batch mark done",
+        "Capture pre-action state",
+        "Register undo/redo for clear by filter",
+        "Capture pre-action state",
+        "Register undo/redo for batch edit tags",
+        "Capture pre-action state",
+        "Validate batch conflicts after group change",
+        "Register undo/redo for move to group"
+    ]
+}

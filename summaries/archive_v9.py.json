@@ -1,0 +1,15 @@
+{
+    "file": "archive_v9.py",
+    "title": "Task Ticker v9 - Task Dependencies and Sequencing",
+    "description": "Author: Neils Haldane-Lutterodt",
+    "classes": [
+        "TaskTickerApp"
+    ],
+    "functions": [],
+    "notes": [
+        "---------------------------",
+        "FILE SETTINGS",
+        "---------------------------",
+        "Maps dropdown labels to UUIDs"
+    ]
+}

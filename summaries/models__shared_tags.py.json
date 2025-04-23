@@ -1,0 +1,10 @@
+{
+    "file": "models\\shared_tags.py",
+    "title": "Shared Tags Module",
+    "description": "This module defines the `SharedTags` class, which manages a global set of tags shared across the application. It provides methods for adding new tags, removing existing tags, and retrieving all tags in sorted order.\n\nClasses:\n    SharedTags:\n        Manages a global set of tags with methods for adding, removing, and retrieving tags.\n\nFunctions:\n    add_tags(tags: list[str]):\n        Adds a list of tags to the global set.\n    remove_tag(tag: str):\n        Removes a specific tag from the global set.\n    get_all_tags() -> list[str]:\n        Retrieves all tags in sorted order.\n\nConstants:\n    None\n\nDependencies:\n    - typing: For type annotations.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "SharedTags"
+    ],
+    "functions": [],
+    "notes": []
+}

@@ -1,0 +1,20 @@
+{
+    "file": "storage\\file_io.py",
+    "title": "File I/O Module for Tasks and Notes Management",
+    "description": "This module provides functionality for managing tasks and notes, including saving and loading data to/from JSON files, ensuring the data directory structure, creating backups, and recovering from file corruption or missing files.\n\nClasses:\n    None\n\nFunctions:\n    ensure_data_dir():\n        Ensures the existence of the data directory.\n    save_tasks(tasks: List[Task]) -> None:\n        Saves a list of tasks to a JSON file, creating a backup of the previous file.\n    load_notes() -> List[Note]:\n        Loads notes from a JSON file. Returns an empty list if the file is missing or corrupt.\n    load_tasks() -> List[Task]:\n        Loads tasks from a JSON file. Links tasks to their associated notes if applicable. Returns an empty list if the file is missing or corrupt.\n    backup_exists() -> bool:\n        Checks if a backup file exists.\n    recover_from_backup() -> List[Task]:\n        Recovers tasks from a backup file if available. Returns the loaded list or an empty list.\n\nConstants:\n    DATA_DIR:\n        The directory where data files are stored.\n    TASKS_FILE:\n        The path to the tasks JSON file.\n    BACKUP_FILE:\n        The path to the backup JSON file for tasks.\n    NOTES_FILE:\n        The path to the notes JSON file.\n\nDependencies:\n    - os: For file and directory operations.\n    - json: For reading and writing JSON files.\n    - shutil: For file backup and recovery operations.\n    - logging: For logging errors and warnings.\n    - typing: For type annotations.\n    - models.task: Provides the Task class for task management.\n    - models.note: Provides the Note class for note management.\n    - logic.note_manager: Provides the get_note_by_id function for linking notes to tasks.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [],
+    "functions": [
+        "ensure_data_dir",
+        "save_tasks",
+        "load_notes",
+        "load_tasks",
+        "backup_exists",
+        "recover_from_backup"
+    ],
+    "notes": [
+        "Load standalone notes for linking",
+        "Note: load standalone Note records for existing tasks",
+        "load_notes from storage.file_io.load_notes isn't for Note records; use note_manager",
+        "Use get_note_by_id for linking"
+    ]
+}

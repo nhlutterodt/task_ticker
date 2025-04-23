@@ -1,0 +1,12 @@
+{
+    "file": "notes\\manager.py",
+    "title": "Notes Manager Module",
+    "description": "This module provides the `NotesManager` class to manage operations related to notes, including creation, updates, deletion, exporting, and template management.\n\nClasses:\n    NotesManager:\n        Handles all note-related operations, including interaction with storage, templates, and versioning.\n\nFunctions:\n    None\n\nConstants:\n    None\n\nDependencies:\n    - models.note: Provides the Note model for note management.\n    - models.note_history: Provides the NoteHistory model for versioning.\n    - storage.note_io: Provides load_notes and save_notes for persistence.\n    - datetime: For handling timestamps.\n    - notes.utils: Provides the export_notes function for exporting notes.\n    - models.note_template: Provides the NoteTemplate model for managing note templates.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "NotesManager"
+    ],
+    "functions": [],
+    "notes": [
+        "Example templates; replace with actual logic if templates are stored elsewhere"
+    ]
+}

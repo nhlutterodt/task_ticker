@@ -1,0 +1,14 @@
+{
+    "file": "models\\note.py",
+    "title": "Note Model Module",
+    "description": "This module defines the `Note` dataclass, which represents a note entity with attributes such as content, timestamps, tags, and history. It is designed to facilitate the management of notes in a task tracking or note-taking application.\n\nClasses:\n    Note:\n        A dataclass representing a note with metadata and content.\n\nFunctions:\n    to_dict() -> dict:\n        Converts the Note instance into a dictionary for serialization.\n    from_dict(data: dict) -> Note:\n        Creates a Note instance from a dictionary.\n    create(content: str, tags: Optional[list] = None, label: Optional[str] = None) -> Note:\n        Creates a new Note instance with a unique ID and timestamps.\n\nAttributes:\n    id (str):\n        A unique identifier for the note.\n    content (str):\n        The main content or body of the note.\n    created_at (datetime):\n        The timestamp when the note was created.\n    updated_at (datetime):\n        The timestamp when the note was last updated.\n    tags (List[str]):\n        A list of tags associated with the note for categorization.\n    label (Optional[str]):\n        An optional label for the note.\n    history (List[str]):\n        A list of historical changes or revisions of the note.\n    task_id (Optional[str]):\n        An optional identifier linking the note to a task.\n\nConstants:\n    None\n\nDependencies:\n    - dataclasses: For defining the Note dataclass.\n    - datetime: For handling timestamps.\n    - typing: For type annotations.\n    - uuid: For generating unique identifiers.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "Note"
+    ],
+    "functions": [],
+    "notes": [
+        "Link to associated task, if any",
+        "Ensure task_id is serialized",
+        "Ensure task_id is deserialized"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "file": "tests\\test_utils.py",
+    "title": "Utility Tests Module",
+    "description": "This module contains unit tests for utility functions related to notes, including parsing links, comparing notes, and exporting notes in various formats.\n\nClasses:\n    TestUtils:\n        Contains test cases for utility functions like parse_links, diff_notes, and export_notes.\n\nFunctions:\n    None\n\nConstants:\n    None\n\nDependencies:\n    - unittest: For creating and running test cases.\n    - datetime: For handling date and time in test data.\n    - notes.utils: Provides utility functions for notes.\n    - models.note: Provides the Note model.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "TestUtils"
+    ],
+    "functions": [],
+    "notes": []
+}

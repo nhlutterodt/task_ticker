@@ -1,0 +1,32 @@
+{
+    "file": "ui\\notes_editor.py",
+    "title": "Notes Editor Module",
+    "description": "This module defines the `NotesEditor` class, which provides a graphical user interface (GUI) for editing notes. It includes features such as markdown preview, template application, and dirty tracking to ensure unsaved changes are handled appropriately.\n\nClasses:\n    NotesEditor:\n        A Tkinter-based GUI for editing notes with support for templates, markdown preview, and validation.\n\nFunctions:\n    __init__(master, note, save_callback, templates: list[NoteTemplate] = None, *args, **kwargs):\n        Initializes the NotesEditor with the given note, save callback, and optional templates.\n    apply_template(template_name):\n        Applies a selected template to the note content.\n    save_note():\n        Saves the note using the provided save callback and updates the original values.\n    toggle_preview():\n        Toggles between the markdown preview and the content editor.\n    on_close():\n        Handles the close event, prompting the user to save unsaved changes.\n\nConstants:\n    None\n\nDependencies:\n    - tkinter: Provides the GUI framework.\n    - tkinter.scrolledtext: For scrollable text areas.\n    - models.note_template: Defines the NoteTemplate class for applying templates.\n    - markdown: Converts markdown content to HTML-like text for preview.\n    - ui.components.note_dirty_tracker: Tracks changes to note fields.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "NotesEditor"
+    ],
+    "functions": [],
+    "notes": [
+        "Track original values for dirty check",
+        "Label",
+        "Tags",
+        "Template",
+        "Content",
+        "Save Button",
+        "Disable until valid and dirty",
+        "Markdown preview setup",
+        "Dirty tracking bindings",
+        "Markdown toggle",
+        "Handle close",
+        "Shortcuts",
+        "Focus label",
+        "reset modified flag",
+        "Apply to note",
+        "Render markdown to HTML-like text in preview",
+        "Swap views",
+        "Swap back to editor",
+        "Yes",
+        "No",
+        "Cancel: do nothing"
+    ]
+}

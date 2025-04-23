@@ -1,0 +1,10 @@
+{
+    "file": "tests\\test_note_model.py",
+    "title": "Note Model Tests Module",
+    "description": "This module contains unit tests for the `Note` model, ensuring proper initialization and handling of optional fields.\n\nClasses:\n    TestNoteModel:\n        Contains test cases for the `Note` model, including initialization and optional field handling.\n\nFunctions:\n    None\n\nConstants:\n    None\n\nDependencies:\n    - unittest: For creating and running test cases.\n    - datetime: For handling date and time in test data.\n    - models.note: Provides the Note model.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "TestNoteModel"
+    ],
+    "functions": [],
+    "notes": []
+}

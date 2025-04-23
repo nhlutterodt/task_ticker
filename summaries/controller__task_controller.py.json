@@ -1,0 +1,10 @@
+{
+    "file": "controller\\task_controller.py",
+    "title": "Task Controller Module",
+    "description": "This module provides the `TaskController` class to manage task-related operations, including fetching notes for specific tasks.\n\nClasses:\n    TaskController:\n        Manages task-related operations and interacts with the NotesManager.\n\nFunctions:\n    None\n\nConstants:\n    None\n\nDependencies:\n    - notes.manager: Provides the NotesManager class for managing notes.\n\nAuthor:\n    Placeholder Author",
+    "classes": [
+        "TaskController"
+    ],
+    "functions": [],
+    "notes": []
+}
