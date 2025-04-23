@@ -3,60 +3,77 @@ logic/validation.py - Task Validation Logic
 Author: Neils Haldane-Lutterodt
 '''
 
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime
 import logging
 from models.task import Task
 
 
-def validate_task_creation(task: Task, task_lookup: Dict[str, Task], strict: bool = False) -> dict:
-    """
-    Validates a single task during creation.
-    Returns a dict with:
-    {
-        "warn": bool,
-        "block": bool,
-        "message": str
-    }
-    """
-    msg = ""
-    block = False
-    warn = False
+DEFAULT_RULES = {
+    "strict_mode": False,
+    "dependency_order": True,
+    "group_priority_exclusive": True,
+    "group_unique_names": True,
+}
 
-    # Prevent due before dependency
-    if task.depends_on:
+
+def validate_task_creation(task: Task, task_lookup: Dict[str, Task], rules: Optional[Dict] = None) -> dict:
+    """Validate a single task on creation based on configured rules."""
+    rules = rules or DEFAULT_RULES.copy()
+    warn, block = False, False
+    message = ""
+
+    # Rule 1: Prevent self-dependency
+    if task.depends_on == task.id:
+        return {"warn": True, "block": True, "message": "Task cannot depend on itself."}
+
+    # Rule 2: Due date must follow dependency
+    if rules.get("dependency_order", True) and task.depends_on:
         parent = task_lookup.get(task.depends_on)
         if parent and task.due_date < parent.due_date:
-            msg = "Task is due before its dependency."
+            message = "Task is due before its dependency."
             warn = True
-            block = strict
+            block = rules.get("strict_mode", False)
 
-    # Prevent self-dependency
-    if task.depends_on == task.id:
-        msg = "Task cannot depend on itself."
-        block = True
+    # Rule 3: Task name must be unique within group
+    if rules.get("group_unique_names", False):
+        duplicates = [
+            t for t in task_lookup.values()
+            if t.task == task.task and t.group == task.group and t.id != task.id
+        ]
+        if duplicates:
+            message = f"Task '{task.task}' already exists in group '{task.group}'."
+            warn = True
+            block = rules.get("strict_mode", False)
 
-    # Future checks: cycle detection, same-sequence duplication, etc.
+    # Rule 4: Only one high-priority task per group
+    if rules.get("group_priority_exclusive", False) and task.priority == "high":
+        conflicts = [
+            t for t in task_lookup.values()
+            if t.group == task.group and t.priority == "high" and t.id != task.id
+        ]
+        if conflicts:
+            message = f"Another high-priority task already exists in group '{task.group}'."
+            warn = True
+            block = rules.get("strict_mode", False)
 
-    return {"warn": warn, "block": block, "message": msg}
+    return {"warn": warn, "block": block, "message": message}
 
 
-def validate_task_graph(tasks: List[Task], strict: bool = False) -> Dict:
-    """
-    Validates task relationships: cycles, dependency order, and missing links.
-    Returns a validation report.
-    """
+def validate_task_graph(tasks: List[Task], rules: Optional[Dict] = None) -> Dict:
+    """Validate task graph for cycles, missing links, and group-based rules."""
+    rules = rules or DEFAULT_RULES.copy()
     task_lookup = {t.id: t for t in tasks}
     visited = set()
     stack = set()
-    cycles = []
-    missing = []
-    date_conflicts = []
+
+    errors = []
+    warnings = []
 
     def dfs(task: Task, path: List[str]):
         if task.id in stack:
             cycle_path = path[path.index(task.id):] + [task.id]
-            cycles.append(" → ".join(cycle_path))
+            errors.append("Cycle detected: " + " → ".join(cycle_path))
             return
         if task.id in visited:
             return
@@ -64,24 +81,22 @@ def validate_task_graph(tasks: List[Task], strict: bool = False) -> Dict:
         stack.add(task.id)
         visited.add(task.id)
 
-        # Dependency validation
-        if task.depends_on and task.depends_on not in task_lookup:
-            missing.append(f"{task.task} depends on missing task ID {task.depends_on}")
-        elif task.depends_on:
-            dep = task_lookup[task.depends_on]
-            if task.due_date < dep.due_date:
-                date_conflicts.append(f"{task.task} is due before dependency {dep.task}")
+        # Dependency checks
+        if task.depends_on:
+            dep = task_lookup.get(task.depends_on)
+            if not dep:
+                errors.append(f"{task.task} depends on missing task ID {task.depends_on}")
+            else:
+                if rules.get("dependency_order", True) and task.due_date < dep.due_date:
+                    errors.append(f"{task.task} is due before dependency {dep.task}")
+                dfs(dep, path + [task.id])
 
-        # Subtask validation
-        for sub_id in getattr(task, 'subtasks', []):
+        # Subtask checks
+        for sub_id in getattr(task, "subtasks", []):
             if sub_id not in task_lookup:
-                missing.append(f"{task.task} has missing subtask ID {sub_id}")
+                warnings.append(f"{task.task} has missing subtask ID {sub_id}")
             else:
                 dfs(task_lookup[sub_id], path + [task.id])
-
-        # Check dependency path
-        if task.depends_on and task.depends_on in task_lookup:
-            dfs(task_lookup[task.depends_on], path + [task.id])
 
         stack.remove(task.id)
 
@@ -89,19 +104,52 @@ def validate_task_graph(tasks: List[Task], strict: bool = False) -> Dict:
         if task.id not in visited:
             dfs(task, [])
 
-    errors = cycles + missing + date_conflicts
+    # Rule: Only one high-priority task per group
+    if rules.get("group_priority_exclusive", False):
+        high_priority_seen = {}
+        for t in tasks:
+            if t.priority == "high":
+                if t.group in high_priority_seen:
+                    errors.append(f"Multiple high-priority tasks in group '{t.group}'")
+                else:
+                    high_priority_seen[t.group] = t.id
+
+    # Rule: Unique task names within group
+    if rules.get("group_unique_names", False):
+        seen_names = set()
+        for t in tasks:
+            key = (t.group, t.task)
+            if key in seen_names:
+                errors.append(f"Duplicate task '{t.task}' in group '{t.group}'")
+            seen_names.add(key)
+
+    # Build final report
     report = {
         "is_valid": len(errors) == 0,
         "errors": errors,
-        "warnings": [],
+        "warnings": warnings,
         "validated_at": datetime.now().isoformat(),
         "affected_tasks": list(visited),
     }
 
-    for e in errors:
-        logging.warning(f"Validation issue: {e}")
+    for issue in errors + warnings:
+        logging.warning(f"Validation issue: {issue}")
 
-    if strict and errors:
+    if rules.get("strict_mode", False) and errors:
         raise ValueError("Validation failed:\n" + "\n".join(errors))
 
     return report
+
+
+def validate_batch_conflicts(tasks: List[Task]) -> bool:
+    """
+    Ensure no conflicting high-priority tasks exist in the batch selection.
+    Returns True if valid, False if conflicts detected.
+    """
+    seen = {}
+    for t in tasks:
+        if t.priority == "high":
+            if t.group in seen:
+                return False
+            seen[t.group] = True
+    return True

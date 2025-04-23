@@ -1,5 +1,9 @@
 {
     "auto_sort": false,
     "default_sort": "due_date",
-    "default_group": "All Groups"
+    "default_group": "All Groups",
+    "ui_preferences": {
+        "strict_mode": false,
+        "dark_mode": false
+    }
 }

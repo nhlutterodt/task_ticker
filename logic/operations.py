@@ -5,20 +5,25 @@ Author: Neils Haldane-Lutterodt
 
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
-import copy
 from uuid import uuid4
+import copy
+
 from models.task import Task
 
 
+# ==============================
+# Core Task Status Operations
+# ==============================
+
 def toggle_status(task: Task, task_lookup: Dict[str, Task]) -> Optional[Task]:
-    """Toggle between 'done' and 'pending' if dependencies allow. Return next recurrence if applicable."""
+    """Toggle task status if allowed. Returns cloned task if recurring."""
     if task.is_blocked(task_lookup):
         raise ValueError("This task is blocked by another incomplete task.")
-    
-    if task.subtasks:
-        if task.is_parent_blocked(task_lookup):
+
+    if hasattr(task, "subtasks") and task.subtasks:
+        if any(not task_lookup[sub_id].is_done() for sub_id in task.subtasks if sub_id in task_lookup):
             raise ValueError("This task has incomplete subtasks.")
-    
+
     task.status = "done" if task.status != "done" else "pending"
 
     if task.status == "done" and is_recurring(task):
@@ -27,16 +32,17 @@ def toggle_status(task: Task, task_lookup: Dict[str, Task]) -> Optional[Task]:
     return None
 
 
+# ==============================
+# Recurring Task Cloning Logic
+# ==============================
+
 def is_recurring(task: Task) -> bool:
-    r = task.recurrence
-    return r is not None and r.get("frequency", "none") != "none"
+    r = task.recurrence or {}
+    return r.get("frequency", "none") != "none"
 
 
 def clone_recurring_task(task: Task, task_lookup: Dict[str, Task]) -> Task:
-    """
-    Clone a recurring task and its subtasks recursively, adjusting IDs and due dates.
-    Returns the new parent task.
-    """
+    """Clone task depending on clone_type (shallow or deep)."""
     freq = task.recurrence.get("frequency", "none")
     interval = task.recurrence.get("interval", 1)
     clone_type = task.recurrence.get("clone_type", "shallow")
@@ -44,38 +50,34 @@ def clone_recurring_task(task: Task, task_lookup: Dict[str, Task]) -> Task:
 
     id_map = {}
 
-    if clone_type == "deep":
-        new_parent = recursive_deep_clone(task, task_lookup, new_due, id_map)
-    else:
-        new_parent = shallow_clone(task, new_due)
-
-    return new_parent
+    return (
+        recursive_deep_clone(task, task_lookup, new_due, id_map)
+        if clone_type == "deep"
+        else shallow_clone(task, new_due)
+    )
 
 
 def compute_next_due_date(current_due: str, frequency: str, interval: int) -> str:
-    """Compute the next due date for a recurring task."""
+    """Compute next due date from recurrence info."""
     due_date = datetime.fromisoformat(current_due)
-    
-    if frequency == "daily":
-        next_due = due_date + timedelta(days=interval)
-    elif frequency == "weekly":
-        next_due = due_date + timedelta(weeks=interval)
-    elif frequency == "monthly":
-        month = due_date.month - 1 + interval
-        year = due_date.year + month // 12
-        month = month % 12 + 1
-        day = min(due_date.day, 28)
-        next_due = due_date.replace(year=year, month=month, day=day)
-    elif frequency == "yearly":
-        next_due = due_date.replace(year=due_date.year + interval)
-    else:
-        next_due = due_date
 
-    return next_due.date().isoformat()
+    if frequency == "daily":
+        return (due_date + timedelta(days=interval)).date().isoformat()
+    elif frequency == "weekly":
+        return (due_date + timedelta(weeks=interval)).date().isoformat()
+    elif frequency == "monthly":
+        new_month = due_date.month - 1 + interval
+        year = due_date.year + new_month // 12
+        month = new_month % 12 + 1
+        day = min(due_date.day, 28)
+        return due_date.replace(year=year, month=month, day=day).date().isoformat()
+    elif frequency == "yearly":
+        return due_date.replace(year=due_date.year + interval).date().isoformat()
+    return due_date.date().isoformat()
 
 
 def shallow_clone(task: Task, new_due: str) -> Task:
-    """Clone a single task (no subtasks)."""
+    """Create a shallow copy of a task (no subtasks)."""
     return Task(
         task=task.task,
         group=task.group,
@@ -86,18 +88,14 @@ def shallow_clone(task: Task, new_due: str) -> Task:
         notes=task.notes,
         tags=list(task.tags),
         recurrence=None,
-        parent_id=task.parent_id,
-        depends_on=task.depends_on,
-        subtasks=[],
         task_id=str(uuid4()),
-        created_at=datetime.now().isoformat()
+        created_at=datetime.now().isoformat(),
+        depends_on=task.depends_on
     )
 
 
 def recursive_deep_clone(original: Task, lookup: Dict[str, Task], new_due: str, id_map: Dict[str, str]) -> Task:
-    """
-    Recursively clone a task and all its subtasks with updated relationships.
-    """
+    """Recursively clone task and subtasks, mapping old IDs to new ones."""
     base_due = datetime.fromisoformat(original.due_date)
     delta = datetime.fromisoformat(new_due) - base_due
 
@@ -115,26 +113,28 @@ def recursive_deep_clone(original: Task, lookup: Dict[str, Task], new_due: str, 
             notes=task.notes,
             tags=list(task.tags),
             recurrence=None,
-            parent_id=parent.id if parent else None,
-            depends_on=id_map.get(task.depends_on) if task.depends_on else None,
-            subtasks=[],
+            depends_on=id_map.get(task.depends_on),
             task_id=new_id,
             created_at=datetime.now().isoformat()
         )
 
-        for sub_id in task.subtasks:
-            subtask = lookup.get(sub_id)
-            if subtask:
-                cloned_sub = clone_task_recursive(subtask, cloned)
+        # Handle subtasks
+        cloned.subtasks = []
+        for sub_id in getattr(task, "subtasks", []):
+            sub = lookup.get(sub_id)
+            if sub:
+                cloned_sub = clone_task_recursive(sub, cloned)
                 cloned.subtasks.append(cloned_sub.id)
 
         return cloned
 
     return clone_task_recursive(original, None)
 
+# ==============================
+# Filtering / Sorting Helpers
+# ==============================
 
 def filter_tasks(tasks: List[Task], status: str = "All", group: str = "All Groups") -> List[Task]:
-    """Filter by status and group."""
     return [
         t for t in tasks
         if (status == "All" or t.status == status.lower())
@@ -143,22 +143,22 @@ def filter_tasks(tasks: List[Task], status: str = "All", group: str = "All Group
 
 
 def sort_tasks(tasks: List[Task], key: str = "due_date") -> List[Task]:
-    """Sort tasks based on a chosen key."""
     fallback = "9999-12-31" if key == "due_date" else 9999
     return sorted(tasks, key=lambda t: getattr(t, key, fallback) or fallback)
 
 
 def validate_dependency(child: Task, parent: Task) -> bool:
-    """Ensure child task has due date after its dependency."""
     return child.due_date >= parent.due_date
 
 
 def create_task_lookup(tasks: List[Task]) -> Dict[str, Task]:
-    """Returns a dictionary of tasks indexed by their ID."""
     return {t.id: t for t in tasks}
-# -----------------------------------
-# Recurrence Presets for UI Dropdown
-# -----------------------------------
+
+
+# ==============================
+# UI: Recurrence Preset Options
+# ==============================
+
 recurrence_structure = {
     "None": {
         "frequency": "none",
