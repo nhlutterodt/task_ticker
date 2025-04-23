@@ -1,27 +1,15 @@
 '''
-ui/app.py - Task Ticker GUI with Recurring Task Support
+ui/app.py - Task Ticker GUI with Strict Mode and Recurrence Support
 Author: Neils Haldane-Lutterodt
 '''
-
-from logic.operations import (
-    toggle_status,
-    filter_tasks,
-    sort_tasks,
-    validate_dependency,
-    create_task_lookup,
-    recurrence_structure  # <-- now valid!
-)
-from storage.file_io import load_tasks, save_tasks
-from storage.settings import load_settings, save_settings
 
 import tkinter as tk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 from uuid import uuid4
 from datetime import datetime
+
 from models.task import Task
-from storage.file_io import load_tasks, save_tasks
-from storage.settings import load_settings, save_settings
 from logic.operations import (
     toggle_status,
     filter_tasks,
@@ -30,12 +18,15 @@ from logic.operations import (
     create_task_lookup,
     recurrence_structure
 )
+from storage.file_io import load_tasks, save_tasks
+from storage.settings import load_settings, save_settings
+from logic.validation import validate_task_creation
 
 class TaskTickerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Task Ticker 📝")
-        self.root.geometry("680x760")
+        self.root.geometry("720x800")
         self.root.resizable(False, False)
 
         self.tasks = load_tasks()
@@ -54,12 +45,19 @@ class TaskTickerApp:
         self.dependency_map = {}
 
         self.build_ui()
-        self.update_group_filter()
-        self.update_tag_filter()
-        self.update_dependency_dropdown()
+        self.update_all_filters()
         self.render_task_list()
 
     def build_ui(self):
+        self.menu = tk.Menu(self.root)
+        self.root.config(menu=self.menu)
+
+        options_menu = tk.Menu(self.menu, tearoff=0)
+        options_menu.add_checkbutton(label="Strict Mode", onvalue=1, offvalue=0,
+                                     variable=tk.IntVar(value=int(self.settings.get("strict_mode", False))),
+                                     command=self.toggle_strict_mode)
+        self.menu.add_cascade(label="Options", menu=options_menu)
+
         control = tk.Frame(self.root)
         control.pack(pady=(10, 0))
 
@@ -111,7 +109,7 @@ class TaskTickerApp:
 
         list_frame = tk.Frame(self.root)
         list_frame.pack(pady=10)
-        self.task_listbox = tk.Listbox(list_frame, width=94, height=18)
+        self.task_listbox = tk.Listbox(list_frame, width=100, height=20)
         self.task_listbox.pack(side=tk.LEFT)
         self.task_listbox.bind("<Double-Button-1>", self.edit_notes_for_selected)
 
@@ -123,6 +121,11 @@ class TaskTickerApp:
         btns.pack(pady=10)
         tk.Button(btns, text="Delete", command=self.delete_task, bg="#f44336", fg="white").pack(side=tk.LEFT, padx=10)
         tk.Button(btns, text="Toggle Done", command=self.toggle_selected_task, bg="#2196F3", fg="white").pack(side=tk.LEFT, padx=10)
+
+    def toggle_strict_mode(self):
+        self.settings["strict_mode"] = not self.settings.get("strict_mode", False)
+        save_settings(self.settings)
+        messagebox.showinfo("Strict Mode", f"Strict Mode is now {'enabled' if self.settings['strict_mode'] else 'disabled'}.")
 
     def add_task(self):
         name = self.task_input.get().strip()
@@ -139,11 +142,6 @@ class TaskTickerApp:
         recur_val = self.recur_option.get()
         recur_dict = recurrence_structure[recur_val]
 
-        if depends_on:
-            parent = self.task_lookup.get(depends_on)
-            if parent and not validate_dependency(Task(name, group, due), parent):
-                messagebox.showwarning("Due Date Conflict", "This task is due before its dependency.")
-
         new_task = Task(
             task=name,
             group=group,
@@ -155,6 +153,15 @@ class TaskTickerApp:
             recurrence=recur_dict
         )
 
+        validation = validate_task_creation(new_task, self.task_lookup, strict=self.settings.get("strict_mode", False))
+        if validation["block"]:
+            messagebox.showerror("Blocked", validation["message"])
+            return
+        elif validation["warn"]:
+            proceed = messagebox.askyesno("Warning", validation["message"] + "\n\nProceed anyway?")
+            if not proceed:
+                return
+
         self.tasks.append(new_task)
         self.task_lookup[new_task.id] = new_task
         self.task_input.delete(0, tk.END)
@@ -162,9 +169,7 @@ class TaskTickerApp:
         self.sequence_input.set(str(seq + 1))
         self.selected_dependency.set("None")
 
-        self.update_group_filter()
-        self.update_tag_filter()
-        self.update_dependency_dropdown()
+        self.update_all_filters()
         self.save_all()
         self.render_task_list()
 
@@ -177,10 +182,11 @@ class TaskTickerApp:
 
         self.visible_tasks = sort_tasks(self.visible_tasks, self.sort_key.get())
         self.task_listbox.delete(0, tk.END)
+
         for t in self.visible_tasks:
             blocked = "⛔" if t.is_blocked(self.task_lookup) else ""
             tags = f" 🏷️ {', '.join(t.tags)}" if t.tags else ""
-            recur = f" 🔁 {t.recurrence['frequency'].capitalize()}" if t.recurrence and t.recurrence.get("frequency") != "none" else ""
+            recur = f" 🔁 {t.recurrence['frequency'].capitalize()}" if t.recurrence.get("frequency") != "none" else ""
             self.task_listbox.insert(
                 tk.END,
                 f"[{t.sequence}] {'✔' if t.is_done() else ''} {t.task} [{t.group}] (Due: {t.due_date}){tags}{recur} {blocked}"
@@ -232,9 +238,7 @@ class TaskTickerApp:
             task = self.visible_tasks[idx]
             self.tasks.remove(task)
             self.task_lookup.pop(task.id, None)
-            self.update_group_filter()
-            self.update_tag_filter()
-            self.update_dependency_dropdown()
+            self.update_all_filters()
             self.save_all()
             self.render_task_list()
         except IndexError:
@@ -265,6 +269,11 @@ class TaskTickerApp:
             label = f"{task.task} [{task.group}] ({task.id[:6]}...)"
             self.dependency_map[label] = task.id
             menu.add_command(label=label, command=lambda val=label: self.selected_dependency.set(val))
+
+    def update_all_filters(self):
+        self.update_group_filter()
+        self.update_tag_filter()
+        self.update_dependency_dropdown()
 
     def save_all(self):
         save_tasks(self.tasks)
