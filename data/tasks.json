@@ -159,5 +159,120 @@
         },
         "parent_id": null,
         "subtasks": []
+    },
+    {
+        "id": "de6379c5-9f83-4182-a428-94be4b654791",
+        "task": "tewafads",
+        "group": "Test",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T18:07:47.620231",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 1,
+        "depends_on": "1f38b1a4-994c-4067-896b-d55e93bca389",
+        "notes": "",
+        "note_id": null,
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
+    },
+    {
+        "id": "c3f45cbc-be90-47d0-b241-33a18e6f5ee0",
+        "task": "afas",
+        "group": "Red",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T18:08:09.117397",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 2,
+        "depends_on": null,
+        "notes": "",
+        "note_id": null,
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
+    },
+    {
+        "id": "d33f3919-60fd-4d2e-bfe2-144334d7fc7b",
+        "task": "test",
+        "group": "Personal",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T18:13:54.138659",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 1,
+        "depends_on": null,
+        "notes": "",
+        "note_id": null,
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
+    },
+    {
+        "id": "bb4a4483-7176-4ff6-b46e-a15dbb05b912",
+        "task": "at",
+        "group": "Personala",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T18:13:58.802906",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 2,
+        "depends_on": null,
+        "notes": "",
+        "note_id": null,
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
+    },
+    {
+        "id": "08924c7a-bc6a-452e-bc36-e9c161f0815e",
+        "task": "asdf",
+        "group": "Personal",
+        "due_date": "2025-04-23",
+        "created_at": "2025-04-23T18:14:05.149736",
+        "priority": "normal",
+        "status": "pending",
+        "sequence": 3,
+        "depends_on": "c138c970-143c-45ef-b765-3993694d285f",
+        "notes": "",
+        "note_id": null,
+        "tags": [],
+        "recurrence": {
+            "frequency": "none",
+            "interval": 0,
+            "clone_type": "shallow",
+            "count": null,
+            "end_date": null
+        },
+        "parent_id": null,
+        "subtasks": []
     }
 ]

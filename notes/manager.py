@@ -30,13 +30,33 @@ class NotesManager:
         save_notes(self.notes)
         return note
 
-    def delete_note(self, note_id: str):
+    def delete_note(self, note_id: str) -> bool:
         if note_id in self.notes:
             del self.notes[note_id]
             save_notes(self.notes)
+            return True
+        return False
+
+    def delete_unlinked(self, linked_ids: set[str]) -> dict[str, Note]:
+        """
+        Delete notes not linked to any task and return remaining notes.
+        """
+        filtered = {nid: note for nid, note in self.notes.items() if nid in linked_ids}
+        if set(self.notes) != set(filtered):
+            self.notes = filtered
+            save_notes(self.notes)
+        return self.notes
 
     def get_notes_by_task(self, task_id: str):
         return [note for note in self.notes.values() if note.task_id == task_id]
+
+    def get_all_notes(self):
+        """Return all notes in storage."""
+        return list(self.notes.values())
+
+    def get_note(self, note_id):
+        """Retrieve a single note by ID."""
+        return self.notes.get(note_id)
 
     def export_notes(self, format: str = "json") -> str:
         from notes.utils import export_notes

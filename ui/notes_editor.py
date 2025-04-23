@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
 from models.note_template import NoteTemplate
+import markdown
+from ui.components.note_dirty_tracker import NoteDirtyTracker
 
 class NotesEditor(tk.Toplevel):
     def __init__(self, master, note, save_callback, templates: list[NoteTemplate] = None, *args, **kwargs):
@@ -42,6 +44,14 @@ class NotesEditor(tk.Toplevel):
         self.save_button = tk.Button(self, text="💾 Save Note", bg="#4CAF50", fg="white", command=self.save_note)
         self.save_button.pack(pady=10)
 
+        # Markdown preview setup
+        self.preview_text = ScrolledText(self, wrap=tk.WORD, state=tk.DISABLED)
+        # Initially hidden
+        self.preview_text.pack_forget()
+
+        # Dirty tracking for unsaved changes
+        self.dirty_tracker = NoteDirtyTracker(self.content_text, self.save_button)
+
         # Markdown toggle
         self.markdown_preview = tk.BooleanVar(value=False)
         self.preview_toggle = tk.Checkbutton(self, text="Toggle Markdown Preview", variable=self.markdown_preview, command=self.toggle_preview)
@@ -69,18 +79,32 @@ class NotesEditor(tk.Toplevel):
         try:
             self.save_callback(self.note)
             messagebox.showinfo("Saved", "Note saved successfully.")
+            # Reset dirty state
+            self.dirty_tracker.reset()
             self.destroy()
         except Exception as e:
             messagebox.showerror("Save Failed", f"Error saving note: {e}")
 
     def toggle_preview(self):
         if self.markdown_preview.get():
-            messagebox.showinfo("Markdown", "Live Markdown preview not yet implemented.")
+            # Render markdown to HTML-like text in preview
+            md_content = self.content_text.get("1.0", tk.END)
+            html = markdown.markdown(md_content)
+            self.preview_text.config(state=tk.NORMAL)
+            self.preview_text.delete("1.0", tk.END)
+            self.preview_text.insert(tk.END, html)
+            self.preview_text.config(state=tk.DISABLED)
+            # Swap views
+            self.content_text.pack_forget()
+            self.preview_text.pack(expand=True, fill=tk.BOTH, padx=10, pady=5)
         else:
-            messagebox.showinfo("Markdown", "Preview disabled.")
+            # Swap back to editor
+            self.preview_text.pack_forget()
+            self.content_text.pack(expand=True, fill=tk.BOTH, padx=10, pady=5)
 
     def on_close(self):
-        if self.content_text.edit_modified():
+        # Warn if unsaved changes exist
+        if self.dirty_tracker.is_dirty:
             if messagebox.askyesno("Unsaved Changes", "You have unsaved changes. Close without saving?"):
                 self.destroy()
         else:

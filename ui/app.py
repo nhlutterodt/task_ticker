@@ -102,6 +102,7 @@ from models.note import Note
 from logic.note_manager import create_note, update_note
 from ui.components.note_editor import NoteEditor
 from ui.notes_editor import NotesEditor
+from ui.notes_viewer import NotesViewer
 from notes.manager import NotesManager
 
 ALL_GROUPS_LABEL = "All Groups"
@@ -138,7 +139,9 @@ class TaskTickerApp:
         self.build_ui()
         self.update_all_filters()
         self.render_task_list()
-        self.root.bind("<Control-n>", lambda _: self.context_menu_add_note())
+        # Keyboard shortcuts for notes operations
+        self.root.bind("<Control-Shift-n>", lambda _: self.context_menu_add_note())
+        self.root.bind("<Control-Shift-v>", lambda _: self.context_menu_view_notes())
 
     def build_ui(self):
         self.menu = tk.Menu(self.root)
@@ -173,7 +176,7 @@ class TaskTickerApp:
         self.tag_dropdown.grid(row=0, column=5)
 
         tk.Label(control, text="Sort:").grid(row=1, column=0)
-        tk.OptionMenu(control, self.sort_key, "due_date", "created_at", "priority", "sequence", command=self.render_task_list).grid(row=1, column=1)
+        tk.OptionMenu(control, self.sort_key, "due_date", "created_at", "priority", "sequence", command=lambda _: self.render_task_list()).grid(row=1, column=1)
         tk.Button(control, text="Sort Now", command=self.render_task_list).grid(row=1, column=2, columnspan=2)
 
         entry = tk.Frame(self.root)
@@ -343,10 +346,13 @@ class TaskTickerApp:
         self.render_task_list()
 
     def edit_notes_for_selected(self, event):
+        """
+        Open the NotesViewer for the selected task on double-click.
+        """
         try:
             idx = self.task_listbox.nearest(event.y)
             task = self.visible_tasks[idx]
-            self.open_notes_editor(task)
+            self.open_notes_viewer(task)
         except IndexError:
             pass
 
@@ -391,32 +397,16 @@ class TaskTickerApp:
         # Launch reusable NoteEditor component
         NoteEditor(self.root, note, save_callback)
 
-    def open_note_editor(self, task_id: str):
+    def open_notes_viewer(self, task):
         """
-        Launch the NotesEditor for the given task ID.
+        Launch the NotesViewer for the given task.
         """
-        task = self.task_lookup.get(task_id)
         if not task:
             messagebox.showerror("Error", "Task not found.")
             return
 
-        notes = self.notes_manager.get_notes_by_task(task_id)
-        if not notes:
-            note = self.notes_manager.create_note("", task_id=task_id)
-        else:
-            note = notes[0]  # Assuming one note per task for simplicity
-
-        def save_callback(updated_note):
-            self.notes_manager.update_note(
-                note_id=updated_note.id,
-                content=updated_note.content,
-                tags=updated_note.tags,
-                label=updated_note.label
-            )
-            self.save_all()
-
-        templates = self.notes_manager.get_all_templates()
-        NotesEditor(self.root, note, save_callback, templates=templates)
+        # Open the aggregated NotesViewer
+        NotesViewer(self.root, task.id, self.notes_manager, self.save_all)
 
     def toggle_selected_task(self):
         try:
@@ -552,8 +542,8 @@ class TaskTickerApp:
         if not selected_idx:
             messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
             return
-        task_id = self.visible_tasks[selected_idx[0]].id
-        self.open_note_editor(task_id)
+        task = self.visible_tasks[selected_idx[0]]
+        self.open_notes_editor(task)
 
     def view_notes_for_selected_task(self):
         selected_idx = self.task_listbox.curselection()
@@ -574,7 +564,7 @@ class TaskTickerApp:
             messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
             return
         task = selected[0]
-        self.open_note_editor(task.id)
+        self.open_notes_editor(task)
 
     def context_menu_view_notes(self):
         selected = self.controller.get_selected_tasks()
@@ -582,5 +572,5 @@ class TaskTickerApp:
             messagebox.showinfo(NO_SELECTION_TITLE, NO_SELECTION_MSG)
             return
         task = selected[0]
-        # Open editor for existing notes
-        self.open_note_editor(task.id)
+        # Open aggregated notes viewer
+        self.open_notes_viewer(task)
