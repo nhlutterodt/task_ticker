@@ -1,0 +1,15 @@
+{
+    "file": "compose_readme.py",
+    "title": "README Module Overview Composer",
+    "description": "This script generates a structured \"\ud83d\udcd8 Module Overview\" section for the project's README.md file. \nIt parses per-file summary JSON files (produced by `generate_summaries.py`) to collect module titles, \ndescriptions, class names, function names, and inline notes. It supports both appending and replacing \nthe section in the README.\n\nFunctions:\n    load_summaries():\n        Loads and groups summary files from the /summaries directory by top-level folder.\n    format_markdown(grouped_summaries):\n        Generates a formatted markdown section from the grouped summaries.\n    update_readme(new_section, mode):\n        Appends or replaces the module overview section in README.md based on the selected mode.\n    __main__:\n        CLI interface to choose append or replace behavior via --mode argument.\n\nConstants:\n    SUMMARY_DIR:\n        Path to the directory containing summary JSON files.\n    README_PATH:\n        Path to the target README.md file.\n    SECTION_HEADER:\n        Markdown header that marks the module overview section in README.md.\n\nDependencies:\n    - os: Interacts with the file system.\n    - json: Parses and writes summary metadata.\n    - argparse: Parses command-line arguments.\n    - collections.defaultdict: Used to group summary data.\n    - builtins: Standard file handling and string formatting.\n\nAuthor:\n    Neils Haldane-Lutterodt",
+    "classes": [],
+    "functions": [
+        "load_summaries",
+        "format_markdown",
+        "update_readme"
+    ],
+    "notes": [
+        "skip empty summaries",
+        "spacing"
+    ]
+}
